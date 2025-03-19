@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1010349611128-05jcna4j8a1cotm58i58nic94dhm5at2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.caloriecounternew",
+            "certificate_hash": "8b393359de36515588b73dc308d4c9e858d31517"
+          }
+        },
+        {
           "client_id": "1010349611128-9mm0sk606fed6t2r0rpici6gad8comhc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
