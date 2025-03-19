@@ -1,5 +1,6 @@
 package com.example.caloriecounternew
 
+import android.app.Activity
 import android.content.Context
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
