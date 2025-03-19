@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val googleAuthClient = GoogleAuthClient(applicationContext)
+        val googleAuthClient = GoogleAuthClient(this)
 
         setContent {
             CalorieCounterNewTheme {
