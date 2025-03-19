@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-</LinearLayout>
+    <!-- Sign In Button -->
+    <Button
+        android:id="@+id/buttonSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_in"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"
+        android:background="@drawable/rounded_button"/>
+
+    <!-- Sign Out Button -->
+    <Button
+        android:id="@+id/buttonSignOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_out"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="200dp"
+        android:visibility="gone"
+        android:background="@drawable/rounded_button"/>
+
+    <!-- Go to Food Page Button -->
+    <Button
+        android:id="@+id/buttonGoToFoodPage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Go_Food"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/buttonSignIn"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/rounded_button"/>
+
+</RelativeLayout>

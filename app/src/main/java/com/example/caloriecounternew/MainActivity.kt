@@ -1,89 +1,64 @@
 package com.example.caloriecounternew
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.lifecycleScope
-import com.example.caloriecounternew.ui.theme.CalorieCounterNewTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // Set the XML layout
+        setContentView(R.layout.activity_main)
 
         val googleAuthClient = GoogleAuthClient(this)
 
-        setContent {
-            CalorieCounterNewTheme {
+        val signInButton: Button = findViewById(R.id.buttonSignIn)
+        val signOutButton: Button = findViewById(R.id.buttonSignOut)
+        val goToFoodPageButton: Button = findViewById(R.id.buttonGoToFoodPage)
 
-                var isSignIn by rememberSaveable {
-                    mutableStateOf(googleAuthClient.isSingedIn())
-                }
+        // Check if the user is signed in
+        if (googleAuthClient.isSingedIn()) {
+            signInButton.visibility = Button.GONE
+            signOutButton.visibility = Button.VISIBLE
+        } else {
+            signInButton.visibility = Button.VISIBLE
+            signOutButton.visibility = Button.GONE
+        }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (isSignIn) {
-
-                        OutlinedButton(onClick = {
-                            lifecycleScope.launch {
-                                googleAuthClient.signOut()
-                                isSignIn = false
-                            }
-                        }) {
-                            Text(
-                                text = "Sign Out",
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(
-                                    horizontal = 24.dp, vertical = 4.dp
-                                )
-                            )
-                        }
-
-                    } else {
-
-                        OutlinedButton(onClick = {
-                            lifecycleScope.launch {
-                                isSignIn = googleAuthClient.signIn()
-                            }
-                        }) {
-                            Text(
-                                text = "Sign In With Gustavus Account",
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(
-                                    horizontal = 24.dp, vertical = 4.dp
-                                )
-                            )
-                        }
-
-                    }
-                }
-
+        // Sign-In button click listener
+        signInButton.setOnClickListener {
+            lifecycleScope.launch {
+                // Use launch to start a coroutine and call the suspend function
+                googleAuthClient.signIn()
+                signInButton.visibility = Button.GONE
+                signOutButton.visibility = Button.VISIBLE
             }
         }
+
+        // Sign-Out button click listener
+        signOutButton.setOnClickListener {
+            lifecycleScope.launch {
+                // Call the suspend function inside a coroutine
+                googleAuthClient.signOut()
+                signInButton.visibility = Button.VISIBLE
+                signOutButton.visibility = Button.GONE
+            }
+        }
+
+        // Go to FoodPage button click listener
+        goToFoodPageButton.setOnClickListener {
+            navigateToFoodPage()
+        }
+    }
+
+    // Navigate to FoodPage
+    private fun navigateToFoodPage() {
+        val intent = Intent(this, FoodPage::class.java)
+        startActivity(intent) //go food
     }
 }
