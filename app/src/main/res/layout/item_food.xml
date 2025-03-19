@@ -1,0 +1,23 @@
+<!-- item_food.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- TextView for the food item name -->
+    <TextView
+        android:id="@+id/itemName"
+        android:textSize="18sp"
+        android:text="Item Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- TextView for the calories -->
+    <TextView
+        android:id="@+id/calories"
+        android:textSize="16sp"
+        android:text="Calories: 100"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>
