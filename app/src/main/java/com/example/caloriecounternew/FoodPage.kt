@@ -1,9 +1,11 @@
 package com.example.caloriecounternew
 
 import android.os.Bundle
-import android.util.Log
+import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.DataSnapshot
@@ -16,7 +18,9 @@ class FoodPage : ComponentActivity() {
 
     private lateinit var database: DatabaseReference
     private lateinit var recyclerView: RecyclerView
+    private lateinit var confirmButton: Button
     private lateinit var foodList: MutableList<FoodItem>
+    private lateinit var adapter: FoodAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,11 +31,26 @@ class FoodPage : ComponentActivity() {
 
         // Initialize RecyclerView and food list
         recyclerView = findViewById(R.id.recyclerViewFoodList)
+        confirmButton = findViewById(R.id.confirmButton)
         foodList = mutableListOf()
         recyclerView.layoutManager = LinearLayoutManager(this)
 
+        // Initialize adapter with selection callback
+        adapter = FoodAdapter(foodList) { foodItem, isSelected ->
+            // Show/hide the confirm button based on selection
+            confirmButton.visibility = if (adapter.getSelectedItems().isNotEmpty()) View.VISIBLE else View.GONE
+        }
+        recyclerView.adapter = adapter
+
         // Fetch data from Firebase
         fetchFoodData()
+
+        // Handle confirm button click
+        confirmButton.setOnClickListener {
+            val totalCalories = adapter.getTotalCalories()
+            val selectedItems = adapter.getSelectedItems().joinToString("\n") { it.itemName ?: "Unknown" }
+            Toast.makeText(this, "Total Calories: $totalCalories\nSelected Items:\n$selectedItems", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun fetchFoodData() {
@@ -45,13 +64,10 @@ class FoodPage : ComponentActivity() {
                         if (foodItemMap != null) {
                             val foodItem = FoodItem.fromSnapshot(foodItemMap)
                             foodList.add(foodItem)
-                            Log.d("FoodItem", "Added: ${foodItem.itemName} - ${foodItem.calories}")
                         }
                     }
 
-                    // Set up the adapter after data is fetched
-                    val adapter = FoodAdapter(foodList)
-                    recyclerView.adapter = adapter
+                    adapter.notifyDataSetChanged()
                 } else {
                     Toast.makeText(this@FoodPage, "No food data available", Toast.LENGTH_SHORT).show()
                 }
@@ -59,7 +75,6 @@ class FoodPage : ComponentActivity() {
 
             override fun onCancelled(error: DatabaseError) {
                 Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
-                Log.e("FirebaseError", error.message)
             }
         })
     }

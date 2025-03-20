@@ -1,11 +1,19 @@
 package com.example.caloriecounternew
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
-class FoodAdapter(private val foodList: List<FoodItem>) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
+class FoodAdapter(
+    private val foodList: List<FoodItem>,
+    private val onItemSelected: (FoodItem, Boolean) -> Unit // Callback for item selection
+) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
+
+    // Track selected items
+    private val selectedItems = mutableSetOf<FoodItem>()
 
     // ViewHolder for binding food item data to views
     class FoodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -26,10 +34,46 @@ class FoodAdapter(private val foodList: List<FoodItem>) : RecyclerView.Adapter<F
         // Set the food name and calories
         holder.foodNameTextView.text = foodItem.itemName ?: "Unknown"
         holder.caloriesTextView.text = "Calories: ${foodItem.calories ?: "0"}"
+        holder.caloriesTextView.text = "Calories: ${foodItem.calories ?: "0"}"
+
+        // Highlight the item if it's selected
+        if (selectedItems.contains(foodItem)) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
+        } else {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, android.R.color.transparent))
+        }
+
+        // Handle item clicks
+        holder.itemView.setOnClickListener {
+            val isSelected = selectedItems.contains(foodItem)
+            if (isSelected) {
+                selectedItems.remove(foodItem) // Deselect
+            } else {
+                selectedItems.add(foodItem) // Select
+            }
+            notifyItemChanged(position) // Update the UI
+            onItemSelected(foodItem, !isSelected) // Notify the activity
+        }
     }
 
     // Return the total number of items in the food list
     override fun getItemCount(): Int {
         return foodList.size
+    }
+
+    // Get the total calories of selected items and parses
+    fun getTotalCalories(): Int {
+        return selectedItems.sumOf { foodItem ->
+            // Extract the numeric part of the calories string (e.g., "290 kcal" -> 290)
+            val caloriesString = foodItem.calories ?: "0 kcal"
+            val caloriesValue = caloriesString.replace("[^0-9]".toRegex(), "").toIntOrNull() ?: 0
+            caloriesValue
+        }
+    }
+
+    // Get the list of selected items
+    //to use later if we need
+    fun getSelectedItems(): List<FoodItem> {
+        return selectedItems.toList()
     }
 }
