@@ -1,10 +1,10 @@
 package com.example.caloriecounternew
 
-data class FoodItem(
+data class FoodItem(//saving all fooditems properties
     val itemName: String? = null,
     val stationName: String? = null,
     val calories: String? = null,
-    val cholesterol: String? = null, // Can be String or Double
+    val cholesterol: String? = null,
     val ingredients: String? = null,
     val meal: String? = null,
     val permanent: Long? = null,
@@ -12,12 +12,12 @@ data class FoodItem(
     val price: Double? = null,
     val protein: String? = null,
     val sodium: String? = null,
-    val totalCarbohydrates: String? = null, // Can be String or Double
+    val totalCarbohydrates: String? = null,
     val totalFat: String? = null
 ) {
     companion object {
-        // Custom method to create a FoodItem from a DataSnapshot
-        fun fromSnapshot(snapshot: Map<String, Any?>): FoodItem {
+        //custom method to create a FoodItem from a DataSnapshot
+        fun fromSnapshot(snapshot: Map<String, Any?>): FoodItem { //allow the string to be anything
             return FoodItem(
                 itemName = snapshot["item_name"] as? String,
                 stationName = snapshot["station_name"] as? String,
@@ -27,7 +27,7 @@ data class FoodItem(
                 meal = snapshot["meal"] as? String,
                 permanent = snapshot["permanent"] as? Long,
                 portionSize = snapshot["portion_size"] as? String,
-                price = snapshot["price"] as? Double,
+                price = snapshot["price"] as? Double, //attempt to save price as double if not string
                 protein = snapshot["protein"] as? String,
                 sodium = snapshot["sodium"] as? String,
                 totalCarbohydrates = parseFlexibleValue(snapshot["total_carbohydrates"]), // Handle String or Double
@@ -40,7 +40,7 @@ data class FoodItem(
             return when (value) {
                 is String -> value
                 is Double -> value.toString()
-                is Long -> value.toString()
+                is Long -> value.toString() //save all as strings for consistency, can parse later
                 else -> null
             }
         }

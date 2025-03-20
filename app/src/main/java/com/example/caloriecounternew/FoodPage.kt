@@ -29,24 +29,24 @@ class FoodPage : ComponentActivity() {
         // Initialize Firebase
         database = FirebaseDatabase.getInstance().reference
 
-        // Initialize RecyclerView and food list
+        //initialize RecyclerView for handling more data and food list
         recyclerView = findViewById(R.id.recyclerViewFoodList)
         confirmButton = findViewById(R.id.confirmButton)
-        foodList = mutableListOf()
+        foodList = mutableListOf() //create foodlist
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Initialize adapter with selection callback
+        //initialize adapter with selection callback
         adapter = FoodAdapter(foodList) { foodItem, isSelected ->
-            // Show/hide the confirm button based on selection
+            //show/hide the confirm button based on selection
             confirmButton.visibility = if (adapter.getSelectedItems().isNotEmpty()) View.VISIBLE else View.GONE
         }
         recyclerView.adapter = adapter
 
-        // Fetch data from Firebase
+        //fetch data from Firebase
         fetchFoodData()
 
         // Handle confirm button click
-        confirmButton.setOnClickListener {
+        confirmButton.setOnClickListener { //when confirm clicked, call functions to get total calories and display in toast
             val totalCalories = adapter.getTotalCalories()
             val selectedItems = adapter.getSelectedItems().joinToString("\n") { it.itemName ?: "Unknown" }
             Toast.makeText(this, "Total Calories: $totalCalories\nSelected Items:\n$selectedItems", Toast.LENGTH_LONG).show()
@@ -68,12 +68,12 @@ class FoodPage : ComponentActivity() {
                     }
 
                     adapter.notifyDataSetChanged()
-                } else {
+                } else { //if fetch fails / database issue, display no food data available
                     Toast.makeText(this@FoodPage, "No food data available", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onCancelled(error: DatabaseError) {
+            override fun onCancelled(error: DatabaseError) { //call error
                 Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
             }
         })
