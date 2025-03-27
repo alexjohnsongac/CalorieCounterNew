@@ -20,17 +20,17 @@ data class FoodItem(//saving all fooditems properties
         fun fromSnapshot(snapshot: Map<String, Any?>): FoodItem { //allow the string to be anything
             return FoodItem(
                 itemName = snapshot["item_name"] as? String,
-                stationName = snapshot["station_name"] as? String,
+                stationName = snapshot["station_name"] as? String, //could be used for sorting.
                 calories = snapshot["calories"] as? String,
-                cholesterol = parseFlexibleValue(snapshot["cholesterol"]), // Handle String or Double
+                cholesterol = parseFlexibleValue(snapshot["cholesterol"]), //string or double
                 ingredients = snapshot["ingredients"] as? String,
-                meal = snapshot["meal"] as? String,
+                meal = snapshot["meal"] as? String, //breakfast, lunch, dinner sorting
                 permanent = snapshot["permanent"] as? Long,
                 portionSize = snapshot["portion_size"] as? String,
                 price = snapshot["price"] as? Double, //attempt to save price as double if not string
                 protein = snapshot["protein"] as? String,
                 sodium = snapshot["sodium"] as? String,
-                totalCarbohydrates = parseFlexibleValue(snapshot["total_carbohydrates"]), // Handle String or Double
+                totalCarbohydrates = parseFlexibleValue(snapshot["total_carbohydrates"]), //string or double
                 totalFat = snapshot["total_fat"] as? String
             )
         }

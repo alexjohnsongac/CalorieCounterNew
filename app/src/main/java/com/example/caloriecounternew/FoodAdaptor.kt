@@ -66,7 +66,7 @@ class FoodAdapter(
     //get the total calories of selected items and also parses it since its string
     fun getTotalCalories(): Int {
         return selectedItems.sumOf { foodItem ->
-            // Extract the numeric part of the calories string (e.g., "290 kcal" -> 290)
+            //extract the numeric part of the calories string (e.g., "290 kcal" -> 290)
             val caloriesString = foodItem.calories ?: "0 kcal"
             val caloriesValue = caloriesString.replace("[^0-9]".toRegex(), "").toIntOrNull() ?: 0
             caloriesValue

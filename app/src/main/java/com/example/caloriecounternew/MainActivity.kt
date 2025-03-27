@@ -35,8 +35,10 @@ class MainActivity : ComponentActivity() {
             lifecycleScope.launch {
                 // Use launch to start a coroutine and call the suspend function
                 googleAuthClient.signIn()
-                signInButton.visibility = Button.GONE
-                signOutButton.visibility = Button.VISIBLE
+                if(googleAuthClient.isSingedIn()) {
+                    signInButton.visibility = Button.GONE
+                    signOutButton.visibility = Button.VISIBLE
+                }
             }
         }
 
