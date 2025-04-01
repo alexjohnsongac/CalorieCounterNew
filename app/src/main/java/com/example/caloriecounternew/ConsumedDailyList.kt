@@ -2,12 +2,12 @@ package com.example.caloriecounternew
 
 import java.util.Calendar
 
-data class ConsumedDailyList(
-    private val consumedFoods: MutableList<FoodItem> = mutableListOf(),
-    private var lastResetDate: Int = getCurrentDayOfYear() // Track last reset date
-) {
+object ConsumedDailyList {
+    private val consumedFoods: MutableList<FoodItem> = mutableListOf()
+    private var lastResetDate: Int = getCurrentDayOfYear()
+
     init {
-        checkAndReset() //check if reset is needed when created
+        checkAndReset()
     }
 
     // Add a food item with automatic day check
@@ -49,10 +49,8 @@ data class ConsumedDailyList(
         }
     }
 
-    companion object {
-        // Helper function to get current day of year (1-365)
-        private fun getCurrentDayOfYear(): Int {
-            return Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
-        }
+    // Helper function to get current day of year (1-365)
+    private fun getCurrentDayOfYear(): Int {
+        return Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
     }
 }
