@@ -49,6 +49,7 @@ class FoodPage : ComponentActivity() {
         confirmButton.setOnClickListener { //when confirm clicked, call functions to get total calories and display in toast
             val totalCalories = adapter.getTotalCalories()
             val selectedItems = adapter.getSelectedItems().joinToString("\n") { it.itemName ?: "Unknown" }
+            adapter.addToDaily() //add all food items in selected to daily
             Toast.makeText(this, "Total Calories: $totalCalories\nSelected Items:\n$selectedItems", Toast.LENGTH_LONG).show()
         }
     }

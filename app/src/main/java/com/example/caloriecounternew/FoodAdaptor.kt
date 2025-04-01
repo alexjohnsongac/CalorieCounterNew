@@ -8,10 +8,12 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
+
 class FoodAdapter(
     private val foodList: List<FoodItem>, //list of fooditems
     private val onItemSelected: (FoodItem, Boolean) -> Unit //for selecting items, would check for isselected, ex: (Fooditem, true)
 ) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
+    private val consumedFoods: MutableList<FoodItem> = mutableListOf()
 
     //track selected items
     private val selectedItems = mutableSetOf<FoodItem>()
@@ -78,4 +80,12 @@ class FoodAdapter(
     fun getSelectedItems(): List<FoodItem> {
         return selectedItems.toList()
     }
+    fun addToDaily(){
+        val itemslist = getSelectedItems()
+        for (item in itemslist){
+            consumed
+        }
+
+    }
+
 }
