@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:text="@string/sign_out"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="200dp"
+        android:layout_alignParentBottom="true"
         android:visibility="gone"
         android:background="@drawable/rounded_button"/>
 
@@ -32,8 +32,46 @@
         android:layout_height="wrap_content"
         android:text="@string/Go_Food"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/buttonSignIn"
-        android:layout_marginTop="50dp"
+        android:layout_above="@id/buttonSignOut"
+        android:layout_marginBottom="64dp"
+        android:visibility="gone"
         android:background="@drawable/rounded_button"/>
+
+    <ImageView
+        android:id="@+id/pixelEggView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="2.0"
+        android:scaleY="2.0"
+        android:src="@drawable/pixelartegg"
+        android:padding="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/pixelFirstView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="3.0"
+        android:scaleY="3.0"
+        android:src="@drawable/pixelartfirst"
+        android:padding="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/pixelSecondView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="3.0"
+        android:scaleY="3.0"
+        android:src="@drawable/pixelartsecond"
+        android:padding="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"/>
+
 
 </RelativeLayout>
