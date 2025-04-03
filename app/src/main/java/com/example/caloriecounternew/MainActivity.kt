@@ -79,17 +79,14 @@ class MainActivity : ComponentActivity() {
             }
             eggView.setImageResource(petDrawable)
 
-            fun getUserCaloriesForToday(): Int {
-                // TODO: Replace this with actual calorie data retrieval
-                return 1500  // replace with goal cal
-            }
+
         }
 
-        // Navigate to FoodPage
-        fun navigateToFoodPage() {
-            val intent = Intent(this, FoodPage::class.java)
-            startActivity(intent) //go food
-        }
+    }
 
+    // Navigate to FoodPage
+    fun navigateToFoodPage() {
+        val intent = Intent(this, FoodPage::class.java)
+        startActivity(intent) //go food
     }
 }
