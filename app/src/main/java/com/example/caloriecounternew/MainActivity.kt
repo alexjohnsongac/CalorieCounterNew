@@ -74,9 +74,8 @@ class MainActivity : ComponentActivity() {
             val streak = getUserStreak() // Retrieve the user's streak of days with the goal met
             val petDrawable = when (streak) {
                 0 -> R.drawable.egg_pet // Egg stage
-                in 1..5 -> R.drawable.stage_1_pet // Stage 1 after meeting the goal for 1-5 days
-                in 6..10 -> R.drawable.stage_2_pet // Stage 2 after meeting the goal for 6-10 days
-                else -> R.drawable.stage_3_pet // Stage 3 after meeting the goal for more than 10 days
+                in 1..5 -> pixelartegg.png // Stage 1 after meeting the goal for 1-5 days
+                else ->  pixelartsecond.png  // Stage 3 after meeting the goal for more than 10 days
             }
             petImageView.setImageResource(petDrawable)
 
