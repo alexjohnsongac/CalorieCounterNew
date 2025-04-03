@@ -1,11 +1,11 @@
 package com.example.caloriecounternew
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.DataSnapshot
@@ -29,54 +29,81 @@ class FoodPage : ComponentActivity() {
         // Initialize Firebase
         database = FirebaseDatabase.getInstance().reference
 
-        //initialize RecyclerView for handling more data and food list
+        // Initialize UI components
         recyclerView = findViewById(R.id.recyclerViewFoodList)
         confirmButton = findViewById(R.id.confirmButton)
-        foodList = mutableListOf() //create foodlist
+        foodList = mutableListOf()
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        //initialize adapter with selection callback
-        adapter = FoodAdapter(foodList) { foodItem, isSelected ->
-            //show/hide the confirm button based on selection
+        // Initialize adapter
+        adapter = FoodAdapter(foodList) { _, _ ->
+            // Show/hide confirm button based on selection
             confirmButton.visibility = if (adapter.getSelectedItems().isNotEmpty()) View.VISIBLE else View.GONE
         }
         recyclerView.adapter = adapter
 
-        //fetch data from Firebase
+        // Fetch food data
         fetchFoodData()
 
-        // Handle confirm button click
-        confirmButton.setOnClickListener { //when confirm clicked, call functions to get total calories and display in toast
-            val totalCalories = adapter.getTotalCalories()
-            val selectedItems = adapter.getSelectedItems().joinToString("\n") { it.itemName ?: "Unknown" }
-            adapter.addToDaily() //add all food items in selected to daily
-            Toast.makeText(this, "Total Calories: $totalCalories\nSelected Items:\n$selectedItems", Toast.LENGTH_LONG).show()
+        // Set up confirm button
+        confirmButton.setOnClickListener {
+            val (itemCount, totalCalories) = adapter.addToDaily()
+
+            if (itemCount > 0) {
+                Toast.makeText(
+                    this,
+                    "Added $itemCount items ($totalCalories calories)",
+                    Toast.LENGTH_SHORT
+                ).show()
+                navigateToMainActivity()
+            } else {
+                Toast.makeText(
+                    this,
+                    "No items selected",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
     private fun fetchFoodData() {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    foodList.clear()
+                foodList.clear()
 
+                if (snapshot.exists()) {
                     snapshot.children.forEach {
                         val foodItemMap = it.value as? Map<String, Any?>
-                        if (foodItemMap != null) {
-                            val foodItem = FoodItem.fromSnapshot(foodItemMap)
-                            foodList.add(foodItem)
+                        foodItemMap?.let { map ->
+                            foodList.add(FoodItem.fromSnapshot(map))
                         }
                     }
-
-                    adapter.notifyDataSetChanged()
-                } else { //if fetch fails / database issue, display no food data available
-                    Toast.makeText(this@FoodPage, "No food data available", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        this@FoodPage,
+                        "No food data available",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+
+                adapter.notifyDataSetChanged()
             }
 
-            override fun onCancelled(error: DatabaseError) { //call error
-                Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(
+                    this@FoodPage,
+                    "Failed to load food data: ${error.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
+    }
+
+    private fun navigateToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        startActivity(intent)
+        finish()
     }
 }
