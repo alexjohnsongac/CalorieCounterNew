@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
             lifecycleScope.launch {
                 // Use launch to start a coroutine and call the suspend function
                 googleAuthClient.signIn()
-                if(googleAuthClient.isSingedIn()) {
+                if (googleAuthClient.isSingedIn()) {
                     signInButton.visibility = Button.GONE
                     signOutButton.visibility = Button.VISIBLE
                     goToFoodPageButton.visibility = Button.VISIBLE
@@ -70,30 +70,26 @@ class MainActivity : ComponentActivity() {
         }
 
 
-        private fun updatePetSprite() {
+        fun updatePetSprite() {
             val streak = getUserStreak() // Retrieve the user's streak of days with the goal met
             val petDrawable = when (streak) {
                 0 -> R.drawable.pixelartegg // Egg stage
                 in 1..5 -> R.drawable.pixelartfirst // Stage 1 after meeting the goal for 1-5 days
-                else ->  R.drawable.pixelartsecond  // Stage 3 after meeting the goal for more than 10 days
+                else -> R.drawable.pixelartsecond  // Stage 3 after meeting the goal for more than 10 days
             }
-            petImageView.setImageResource(petDrawable)
+            eggView.setImageResource(petDrawable)
 
-        private fun getUserCaloriesForToday(): Int {
-            // TODO: Replace this with actual calorie data retrieval
-            return 1500  // replace with goal cal
+            fun getUserCaloriesForToday(): Int {
+                // TODO: Replace this with actual calorie data retrieval
+                return 1500  // replace with goal cal
+            }
         }
+
+        // Navigate to FoodPage
+        fun navigateToFoodPage() {
+            val intent = Intent(this, FoodPage::class.java)
+            startActivity(intent) //go food
+        }
+
     }
-
-    // Navigate to FoodPage
-    private fun navigateToFoodPage() {
-        val intent = Intent(this, FoodPage::class.java)
-        startActivity(intent) //go food
-    }
-
-
-
-
-
-
 }
