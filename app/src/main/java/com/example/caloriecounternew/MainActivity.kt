@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.graphics.Color.rgb
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -92,7 +93,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val dataSet = PieDataSet(entries, "Calorie Progress").apply {
-            colors = listOf(Color.CYAN, Color.GRAY)
+            colors = listOf(Color.rgb(245,199,186), Color.rgb(208,221,228))
             valueTextColor = Color.WHITE
             valueTextSize = 12f
         }
@@ -122,9 +123,9 @@ class MainActivity : ComponentActivity() {
         val dialogView = layoutInflater.inflate(R.layout.prompt_calories, null)
         val editTextGoal = dialogView.findViewById<EditText>(R.id.editTextCalorieGoal)
 
-        editTextGoal.setText(getCalorieGoal().toString())
+        editTextGoal.setText(getCalorieGoal().toString()) // Runs ignore error
 
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this)// Preset alert builder import
             .setTitle("Set Daily Calorie Goal")
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
