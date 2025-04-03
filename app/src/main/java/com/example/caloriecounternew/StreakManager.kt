@@ -36,46 +36,21 @@ class StreakManager(context: Context) {
 
     // Update the streak based on calorie intake
     fun updateStreak(totalCalories: Int): Int {
-        val lastLogDate = getLastLogDate()
-        val todayDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-
         var currentStreak = getStreak()
 
-        if (lastLogDate != todayDate) {
+      //  if (lastLogDate != todayDate) {
             // Only increment streak if calories are between 1700 and 2300
-            if (totalCalories in 1700..2300) {
-                if (isConsecutiveDay(lastLogDate, todayDate)) {
-                    currentStreak++
-                } else {
-                    currentStreak = 1 // Reset streak if not consecutive
-                }
-            } else {
-                currentStreak = 1 // Reset streak if calories are not within the desired range
-            }
-            // Update the last log date
-            setLastLogDate(todayDate)
+        if (totalCalories in 1700..2300) {
+            currentStreak++
+
+        } else {
+            currentStreak = 1 // Reset streak if calories are not within the desired range
+        }
 
             // Save the updated streak value
-            setStreak(currentStreak)
-        }
+        setStreak(currentStreak)
 
         return currentStreak
     }
 
-    // Check if the last log was yesterday
-    private fun isConsecutiveDay(lastLogDate: String?, todayDate: String): Boolean {
-        return if (lastLogDate != null) {
-            val lastLogCalendar = Calendar.getInstance().apply {
-                time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(lastLogDate) ?: Date()
-            }
-            val todayCalendar = Calendar.getInstance()
-            todayCalendar.time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(todayDate) ?: Date()
-
-            // Check if last log date is exactly one day before today
-            todayCalendar.get(Calendar.DAY_OF_YEAR) - lastLogCalendar.get(Calendar.DAY_OF_YEAR) == 1 &&
-                    todayCalendar.get(Calendar.YEAR) == lastLogCalendar.get(Calendar.YEAR)
-        } else {
-            false
-        }
-    }
 }
