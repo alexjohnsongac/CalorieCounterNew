@@ -3,6 +3,7 @@ package com.example.caloriecounternew
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -11,6 +12,10 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -22,6 +27,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var pieChart: PieChart
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +35,7 @@ class MainActivity : ComponentActivity() {
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         val googleAuthClient = GoogleAuthClient(this)
+        pieChart = findViewById(R.id.pieChart)
 
         // Initialize all views
         val signInButton: Button = findViewById(R.id.buttonSignIn)
@@ -36,11 +43,10 @@ class MainActivity : ComponentActivity() {
         val goToFoodPageButton: Button = findViewById(R.id.buttonGoToFoodPage)
         val setCalorieGoalButton: Button = findViewById(R.id.buttonSetCalorieGoal)
         val eggView: ImageView = findViewById(R.id.pixelEggView)
-        val firstView: ImageView = findViewById(R.id.pixelFirstView)
-        val secondView: ImageView = findViewById(R.id.pixelSecondView)
 
         // Check and update UI based on sign-in status
         updateUiVisibility(googleAuthClient.isSingedIn())
+        updatePieChart() // Update chart on create
 
         // Set up button click listeners
         signInButton.setOnClickListener {
@@ -48,6 +54,7 @@ class MainActivity : ComponentActivity() {
                 googleAuthClient.signIn()
                 if (googleAuthClient.isSingedIn()) {
                     updateUiVisibility(true)
+                    updatePieChart()
                 }
             }
         }
@@ -68,19 +75,52 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        updatePieChart() // Update chart when returning from FoodPage
+    }
+
+    private fun updatePieChart() {
+        val calorieGoal = getCalorieGoal().toFloat()
+        val caloriesConsumed = ConsumedDailyList.getDailyCalories().toFloat()
+        val remainingCalories = (calorieGoal - caloriesConsumed).coerceAtLeast(0f)
+
+        val entries = ArrayList<PieEntry>().apply {
+            add(PieEntry(caloriesConsumed, "Consumed"))
+            add(PieEntry(remainingCalories, "Remaining"))
+        }
+
+        val dataSet = PieDataSet(entries, "Calorie Progress").apply {
+            colors = listOf(Color.RED, Color.GREEN)
+            valueTextColor = Color.WHITE
+            valueTextSize = 12f
+        }
+
+        pieChart.data = PieData(dataSet)
+        pieChart.apply {
+            description.isEnabled = false
+            centerText = "Daily Calories\n${caloriesConsumed.toInt()}/$calorieGoal"
+            setCenterTextSize(14f)
+            animateY(1000)
+            legend.isEnabled = false
+            setEntryLabelColor(Color.BLACK)
+            invalidate() // refresh chart
+        }
+    }
+
     private fun updateUiVisibility(isSignedIn: Boolean) {
         findViewById<Button>(R.id.buttonSignIn).visibility = if (isSignedIn) View.GONE else View.VISIBLE
         findViewById<Button>(R.id.buttonSignOut).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         findViewById<Button>(R.id.buttonGoToFoodPage).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         findViewById<Button>(R.id.buttonSetCalorieGoal).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         findViewById<ImageView>(R.id.pixelEggView).visibility = if (isSignedIn) View.VISIBLE else View.GONE
+        pieChart.visibility = if (isSignedIn) View.VISIBLE else View.GONE
     }
 
     private fun showCalorieGoalDialog() {
         val dialogView = layoutInflater.inflate(R.layout.prompt_calories, null)
         val editTextGoal = dialogView.findViewById<EditText>(R.id.editTextCalorieGoal)
 
-        // Set current goal if exists
         editTextGoal.setText(getCalorieGoal().toString())
 
         AlertDialog.Builder(this)
@@ -92,6 +132,7 @@ class MainActivity : ComponentActivity() {
                     val goal = input.toInt()
                     saveCalorieGoal(goal)
                     Toast.makeText(this, "Goal set to $goal calories", Toast.LENGTH_SHORT).show()
+                    updatePieChart()
                 } else {
                     Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show()
                 }
