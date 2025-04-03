@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import kotlinx.coroutines.launch
+import com.example.caloriecounternew.ui.theme.Blueish
 
 class MainActivity : ComponentActivity() {
 
@@ -91,7 +92,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val dataSet = PieDataSet(entries, "Calorie Progress").apply {
-            colors = listOf(Color.RED, Color.GREEN)
+            colors = listOf(Color.CYAN, Color.GRAY)
             valueTextColor = Color.WHITE
             valueTextSize = 12f
         }
