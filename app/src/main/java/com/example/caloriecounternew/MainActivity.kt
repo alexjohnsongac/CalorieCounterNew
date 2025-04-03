@@ -71,9 +71,9 @@ class MainActivity : ComponentActivity() {
 
 
         fun updatePetSprite() {
-            val streak = getUserStreak() // Retrieve the user's streak of days with the goal met
+            val streak = currentStreak // Retrieve the user's streak of days with the goal met
             val petDrawable = when (streak) {
-                0 -> R.drawable.pixelartegg // Egg stage
+                0 -> R.drawable.pixelartegg // Egg 1
                 in 1..5 -> R.drawable.pixelartfirst // Stage 1 after meeting the goal for 1-5 days
                 else -> R.drawable.pixelartsecond  // Stage 3 after meeting the goal for more than 10 days
             }

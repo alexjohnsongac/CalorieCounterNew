@@ -48,7 +48,10 @@
           },
           {
             "client_id": "1010349611128-d0n4n0tjtsfah28hksbug1pg4dt4ci2n.apps.googleusercontent.com",
-            "client_type": 3
+            "client_type": 1,
+            "android_info": {
+              "package_name": "com.example.caloriecounternew",
+              "certificate_hash": "a21b39f950df1a138d74018f78cda807b75a9698"
           }
         ],
         "api_key": [
