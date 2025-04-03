@@ -13,7 +13,17 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="200dp"
         android:background="@drawable/rounded_button"/>
-
+    <!-- Calorie Goal -->
+    <Button
+        android:id="@+id/buttonSetCalorieGoal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/set_calorie_goal"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/buttonSignOut"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        android:background="@drawable/rounded_button"/>
     <!-- Sign Out Button -->
     <Button
         android:id="@+id/buttonSignOut"
