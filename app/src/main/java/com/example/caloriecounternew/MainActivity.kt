@@ -68,6 +68,22 @@ class MainActivity : ComponentActivity() {
         goToFoodPageButton.setOnClickListener {
             navigateToFoodPage()
         }
+
+
+        private fun updatePetSprite() {
+            val streak = getUserStreak() // Retrieve the user's streak of days with the goal met
+            val petDrawable = when (streak) {
+                0 -> R.drawable.egg_pet // Egg stage
+                in 1..5 -> R.drawable.stage_1_pet // Stage 1 after meeting the goal for 1-5 days
+                in 6..10 -> R.drawable.stage_2_pet // Stage 2 after meeting the goal for 6-10 days
+                else -> R.drawable.stage_3_pet // Stage 3 after meeting the goal for more than 10 days
+            }
+            petImageView.setImageResource(petDrawable)
+
+        private fun getUserCaloriesForToday(): Int {
+            // TODO: Replace this with actual calorie data retrieval
+            return 1500  // replace with goal cal
+        }
     }
 
     // Navigate to FoodPage
@@ -75,4 +91,10 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, FoodPage::class.java)
         startActivity(intent) //go food
     }
+
+
+
+
+
+
 }
