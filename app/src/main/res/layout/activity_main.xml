@@ -4,6 +4,13 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <!-- Add PieChart at the top -->
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/pieChart"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
     <!-- Sign In Button -->
     <Button
         android:id="@+id/buttonSignIn"
@@ -13,7 +20,17 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="200dp"
         android:background="@drawable/rounded_button"/>
-
+    <!-- Calorie Goal -->
+    <Button
+        android:id="@+id/buttonSetCalorieGoal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/set_calorie_goal"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/buttonSignOut"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        android:background="@drawable/rounded_button"/>
     <!-- Sign Out Button -->
     <Button
         android:id="@+id/buttonSignOut"
@@ -44,9 +61,9 @@
         android:scaleX="2.0"
         android:scaleY="2.0"
         android:src="@drawable/pixelartegg"
-        android:padding="50dp"
+        android:padding="75dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_above="@id/buttonGoToFoodPage"
         android:visibility="gone"/>
 
     <ImageView
@@ -56,9 +73,9 @@
         android:scaleX="3.0"
         android:scaleY="3.0"
         android:src="@drawable/pixelartfirst"
-        android:padding="50dp"
+        android:padding="75dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_above="@id/buttonGoToFoodPage"
         android:visibility="gone"/>
 
     <ImageView
@@ -68,9 +85,9 @@
         android:scaleX="3.0"
         android:scaleY="3.0"
         android:src="@drawable/pixelartsecond"
-        android:padding="50dp"
+        android:padding="75dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_above="@id/buttonGoToFoodPage"
         android:visibility="gone"/>
 
 

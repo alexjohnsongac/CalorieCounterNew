@@ -3,4 +3,5 @@
     <string name="Go_Food">Go to Food Page</string>
     <string name="sign_out">Sign Out</string>
     <string name="sign_in">Sign In With Gustavus Account</string>
+    <string name="set_calorie_goal">Set Calorie Goal</string>
 </resources>

@@ -13,7 +13,7 @@ class FoodAdapter(
     private val onItemSelected: (FoodItem, Boolean) -> Unit
 ) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
 
-    //track selected items
+    // Track selected items
     private val selectedItems = mutableSetOf<FoodItem>()
 
     class FoodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -33,6 +33,7 @@ class FoodAdapter(
         holder.foodNameTextView.text = foodItem.itemName ?: "Unknown"
         holder.caloriesTextView.text = "Calories: ${foodItem.calories ?: "0"}"
 
+        // Highlight selected items
         if (selectedItems.contains(foodItem)) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
         } else {
@@ -51,9 +52,7 @@ class FoodAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return foodList.size
-    }
+    override fun getItemCount(): Int = foodList.size
 
     fun getTotalCalories(): Int {
         return selectedItems.sumOf { foodItem ->
@@ -62,16 +61,25 @@ class FoodAdapter(
         }
     }
 
-    fun getSelectedItems(): List<FoodItem> {
-        return selectedItems.toList()
-    }
+    fun getSelectedItems(): List<FoodItem> = selectedItems.toList()
 
-    fun addToDaily() {
-        val itemsList = getSelectedItems()
-        for (item in itemsList) {
+    /**
+     * Adds selected items to daily consumption list
+     * @return Pair of (number of items added, total calories added)
+     */
+    fun addToDaily(): Pair<Int, Int> {
+        val itemsToAdd = getSelectedItems()
+        val count = itemsToAdd.size
+        val calories = getTotalCalories()
+
+        itemsToAdd.forEach { item ->
             ConsumedDailyList.addFoodItem(item)
         }
-        selectedItems.clear() // Clear selection after adding
-        notifyDataSetChanged() // Update the UI
+
+        // Clear selection after adding
+        selectedItems.clear()
+        notifyDataSetChanged()
+
+        return Pair(count, calories)
     }
 }
