@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
@@ -39,6 +40,8 @@ class MainActivity : ComponentActivity() {
         val googleAuthClient = GoogleAuthClient(this)
         pieChart = findViewById(R.id.pieChart)
 
+        val streakTextView: TextView = findViewById(R.id.textViewStreak)
+
         // Initialize all views
         val signInButton: Button = findViewById(R.id.buttonSignIn)
         val signOutButton: Button = findViewById(R.id.buttonSignOut)
@@ -49,6 +52,13 @@ class MainActivity : ComponentActivity() {
         // Check and update UI based on sign-in status
         updateUiVisibility(googleAuthClient.isSingedIn())
         updatePieChart() // Update chart on create
+        CalorieStreakManager.checkAndUpdateStreak(this)
+
+        val streak = CalorieStreakManager.getStreak(this)
+        findViewById<TextView>(R.id.textViewStreak).text = "Calorie streaks: $streak/7"
+
+
+
 
         // Set up button click listeners
         signInButton.setOnClickListener {
@@ -116,6 +126,7 @@ class MainActivity : ComponentActivity() {
         findViewById<Button>(R.id.buttonGoToFoodPage).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         findViewById<Button>(R.id.buttonSetCalorieGoal).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         findViewById<ImageView>(R.id.pixelEggView).visibility = if (isSignedIn) View.VISIBLE else View.GONE
+        findViewById<TextView>(R.id.textViewStreak).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         pieChart.visibility = if (isSignedIn) View.VISIBLE else View.GONE
     }
 
