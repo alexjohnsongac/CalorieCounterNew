@@ -119,6 +119,11 @@ class MainActivity : ComponentActivity() {
         pieChart.visibility = if (isSignedIn) View.VISIBLE else View.GONE
     }
 
+/*  Calorie Formula
+Men: BMR = (22.0462*weight(lbs)) + (2.46063125 * height (cm)) - (5 * age (yrs)) + 5
+Women: BMR = (22.0462 * weight in kg) + (2.46063125 *  height (cm)) - 161
+ */
+
     private fun showCalorieGoalDialog() {
         val dialogView = layoutInflater.inflate(R.layout.prompt_calories, null)
         val editTextGoal = dialogView.findViewById<EditText>(R.id.editTextCalorieGoal)
