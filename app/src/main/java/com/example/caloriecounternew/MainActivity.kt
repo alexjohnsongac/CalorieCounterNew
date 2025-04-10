@@ -144,6 +144,9 @@ Women: BMR = (22.0462 * weight in kg) + (2.46063125 *  height (cm)) - 161
                     Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show()
                 }
             }
+            .setNeutralButton("Suggest Calorie Goal") { _, _ ->
+                //add custom dialog fragment
+            }
             .setNegativeButton("Cancel", null)
             .show()
     }
@@ -152,7 +155,7 @@ Women: BMR = (22.0462 * weight in kg) + (2.46063125 *  height (cm)) - 161
         sharedPreferences.edit().putInt(KEY_CALORIE_GOAL, goal).apply()
     }
 
-    fun getCalorieGoal(): Int {
+    private fun getCalorieGoal(): Int {
         return sharedPreferences.getInt(KEY_CALORIE_GOAL, DEFAULT_CALORIE_GOAL)
     }
 
