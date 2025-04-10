@@ -5,13 +5,32 @@
     android:padding="16dp">
 
     <!-- Add PieChart at the top -->
+    <!-- Sign In Button -->
+
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pieChart"
         android:layout_width="300dp"
         android:layout_height="300dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="34dp"
+        android:layout_marginTop="16dp">
+
+
+    </com.github.mikephil.charting.charts.PieChart>
+<!-- Calorie Streak counter -->
+    <TextView
+        android:id="@+id/textViewCalorieStreak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/pieChart"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"/>
-    <!-- Sign In Button -->
+        android:layout_marginTop="86dp"
+        android:text="@string/calorie_streak"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:visibility="gone"
+        />
+
     <Button
         android:id="@+id/buttonSignIn"
         android:layout_width="wrap_content"
@@ -89,18 +108,6 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@id/buttonGoToFoodPage"
         android:visibility="gone"/>
-
-    <TextView
-        android:id="@+id/textViewStreak"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Calorie streaks: 0/7"
-        android:textSize="18sp"
-        android:textColor="@android:color/black"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"
-        />
-
 
 
 </RelativeLayout>

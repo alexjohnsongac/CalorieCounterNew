@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.caloriecounternew.R.*
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -34,20 +35,20 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(layout.activity_main)
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
         val googleAuthClient = GoogleAuthClient(this)
-        pieChart = findViewById(R.id.pieChart)
+        pieChart = findViewById(id.pieChart)
 
-        val streakTextView: TextView = findViewById(R.id.textViewStreak)
+        val streakTextView: TextView = findViewById(id.textViewCalorieStreak)
 
         // Initialize all views
-        val signInButton: Button = findViewById(R.id.buttonSignIn)
-        val signOutButton: Button = findViewById(R.id.buttonSignOut)
-        val goToFoodPageButton: Button = findViewById(R.id.buttonGoToFoodPage)
-        val setCalorieGoalButton: Button = findViewById(R.id.buttonSetCalorieGoal)
-        val eggView: ImageView = findViewById(R.id.pixelEggView)
+        val signInButton: Button = findViewById(id.buttonSignIn)
+        val signOutButton: Button = findViewById(id.buttonSignOut)
+        val goToFoodPageButton: Button = findViewById(id.buttonGoToFoodPage)
+        val setCalorieGoalButton: Button = findViewById(id.buttonSetCalorieGoal)
+        val eggView: ImageView = findViewById(id.pixelEggView)
 
         // Check and update UI based on sign-in status
         updateUiVisibility(googleAuthClient.isSingedIn())
@@ -55,7 +56,7 @@ class MainActivity : ComponentActivity() {
         CalorieStreakManager.checkAndUpdateStreak(this)
 
         val streak = CalorieStreakManager.getStreak(this)
-        findViewById<TextView>(R.id.textViewStreak).text = "Calorie streaks: $streak/7"
+        findViewById<TextView>(id.textViewCalorieStreak).text = "Weekly Streak: $streak of 7 days in range"
 
 
 
@@ -121,18 +122,18 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun updateUiVisibility(isSignedIn: Boolean) {
-        findViewById<Button>(R.id.buttonSignIn).visibility = if (isSignedIn) View.GONE else View.VISIBLE
-        findViewById<Button>(R.id.buttonSignOut).visibility = if (isSignedIn) View.VISIBLE else View.GONE
-        findViewById<Button>(R.id.buttonGoToFoodPage).visibility = if (isSignedIn) View.VISIBLE else View.GONE
-        findViewById<Button>(R.id.buttonSetCalorieGoal).visibility = if (isSignedIn) View.VISIBLE else View.GONE
-        findViewById<ImageView>(R.id.pixelEggView).visibility = if (isSignedIn) View.VISIBLE else View.GONE
-        findViewById<TextView>(R.id.textViewStreak).visibility = if (isSignedIn) View.VISIBLE else View.GONE
+        findViewById<Button>(id.buttonSignIn).visibility = if (isSignedIn) View.GONE else View.VISIBLE
+        findViewById<Button>(id.buttonSignOut).visibility = if (isSignedIn) View.VISIBLE else View.GONE
+        findViewById<Button>(id.buttonGoToFoodPage).visibility = if (isSignedIn) View.VISIBLE else View.GONE
+        findViewById<Button>(id.buttonSetCalorieGoal).visibility = if (isSignedIn) View.VISIBLE else View.GONE
+        findViewById<ImageView>(id.pixelEggView).visibility = if (isSignedIn) View.VISIBLE else View.GONE
+        findViewById<TextView>(id.textViewCalorieStreak).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         pieChart.visibility = if (isSignedIn) View.VISIBLE else View.GONE
     }
 
     private fun showCalorieGoalDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.prompt_calories, null)
-        val editTextGoal = dialogView.findViewById<EditText>(R.id.editTextCalorieGoal)
+        val dialogView = layoutInflater.inflate(layout.prompt_calories, null)
+        val editTextGoal = dialogView.findViewById<EditText>(id.editTextCalorieGoal)
 
         editTextGoal.setText(getCalorieGoal().toString()) // Runs ignore error
 
