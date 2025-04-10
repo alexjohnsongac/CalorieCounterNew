@@ -17,20 +17,20 @@ object CalorieStreakManager {
         val today = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
         val lastUpdateDay = prefs.getInt(KEY_LAST_UPDATE_DAY, -1)
 
-        if (today != lastUpdateDay) {
-            val calories = ConsumedDailyList.getDailyCalories()
-            var streak = prefs.getInt(KEY_STREAK, 0)
+        //if (today != lastUpdateDay) {
+        val calories = ConsumedDailyList.getDailyCalories()
+        var streak = prefs.getInt(KEY_STREAK, 0)
 
-            if (calories in MIN_CAL..MAX_CAL) {
-                streak = (streak + 1).coerceAtMost(7) // cap at 7
+        if (calories in MIN_CAL..MAX_CAL) {
+            streak = (streak + 1).coerceAtMost(7) // cap at 7
             }
 
-            prefs.edit()
-                .putInt(KEY_STREAK, streak)
-                .putInt(KEY_LAST_UPDATE_DAY, today)
-                .apply()
+        prefs.edit()
+            .putInt(KEY_STREAK, streak)
+            .putInt(KEY_LAST_UPDATE_DAY, today)
+            .apply()
         }
-    }
+
 
     fun getStreak(context: Context): Int {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
