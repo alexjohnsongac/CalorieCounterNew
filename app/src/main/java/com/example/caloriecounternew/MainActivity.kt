@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
         CalorieStreakManager.checkAndUpdateStreak(this)
 
         val streak = CalorieStreakManager.getStreak(this)
-        findViewById<TextView>(id.textViewCalorieStreak).text = "Weekly Streak: $streak of 7 days in range"
+        findViewById<TextView>(id.textViewCalorieStreak).text = "Weekly Streak: $streak of 7 days"
 
 
 
@@ -126,7 +126,13 @@ class MainActivity : ComponentActivity() {
         findViewById<Button>(id.buttonSignOut).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         findViewById<Button>(id.buttonGoToFoodPage).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         findViewById<Button>(id.buttonSetCalorieGoal).visibility = if (isSignedIn) View.VISIBLE else View.GONE
-        findViewById<ImageView>(id.pixelEggView).visibility = if (isSignedIn) View.VISIBLE else View.GONE
+        findViewById<ImageView>(id.pixelEggView).visibility =
+            if (isSignedIn && CalorieStreakManager.getStreak(this) < 2) View.VISIBLE else View.GONE
+        findViewById<ImageView>(id.pixelFirstView).visibility =
+            if (isSignedIn && CalorieStreakManager.getStreak(this) >= 2 &&
+                CalorieStreakManager.getStreak(this) < 4) View.VISIBLE else View.GONE
+        findViewById<ImageView>(id.pixelSecondView).visibility =
+            if (isSignedIn && CalorieStreakManager.getStreak(this) >= 4) View.VISIBLE else View.GONE
         findViewById<TextView>(id.textViewCalorieStreak).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         pieChart.visibility = if (isSignedIn) View.VISIBLE else View.GONE
     }
