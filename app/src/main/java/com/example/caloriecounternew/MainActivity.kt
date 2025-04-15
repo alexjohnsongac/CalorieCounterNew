@@ -7,9 +7,11 @@ import android.graphics.Color
 import android.graphics.Color.rgb
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -140,6 +142,20 @@ class MainActivity : ComponentActivity() {
     private fun showCalorieGoalDialog() {
         val dialogView = layoutInflater.inflate(layout.prompt_calories, null)
         val editTextGoal = dialogView.findViewById<EditText>(id.editTextCalorieGoal)
+        val spinner = dialogView.findViewById<Spinner>(R.id.spinnerStreakOptions) // New Spinner
+
+        // Set up spinner options
+        val options = listOf("Maintain weight", "Lose weight", "Gain mass")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        val prefs = getSharedPreferences("CaloriePrefs", MODE_PRIVATE)
+        val savedGoalType = prefs.getString("goal_type", "Maintain weight") // Default
+        val savedPosition = options.indexOf(savedGoalType)
+        if (savedPosition != -1) {
+            spinner.setSelection(savedPosition)
+        }
 
         editTextGoal.setText(getCalorieGoal().toString()) // Runs ignore error
 
@@ -148,9 +164,12 @@ class MainActivity : ComponentActivity() {
             .setView(dialogView)
             .setPositiveButton("Save") { _, _ ->
                 val input = editTextGoal.text.toString()
+                val selectedGoalType = spinner.selectedItem.toString()
                 if (input.isNotEmpty() && input.toIntOrNull() != null) {
                     val goal = input.toInt()
                     saveCalorieGoal(goal)
+                    val prefs = getSharedPreferences("CaloriePrefs", MODE_PRIVATE)
+                    prefs.edit().putString("goal_type", selectedGoalType).apply()
                     Toast.makeText(this, "Goal set to $goal calories", Toast.LENGTH_SHORT).show()
                     updatePieChart()
                 } else {
