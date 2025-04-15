@@ -61,8 +61,6 @@ class MainActivity : ComponentActivity() {
         findViewById<TextView>(id.textViewCalorieStreak).text = "Weekly Streak: $streak of 7 days"
 
 
-
-
         // Set up button click listeners
         signInButton.setOnClickListener {
             lifecycleScope.launch {
@@ -150,8 +148,8 @@ class MainActivity : ComponentActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
 
-        val prefs = getSharedPreferences("CaloriePrefs", MODE_PRIVATE)
-        val savedGoalType = prefs.getString("goal_type", "Maintain weight") // Default
+        val weightPrefs = getSharedPreferences("WeightPrefs", MODE_PRIVATE)
+        val savedGoalType = weightPrefs.getString("goal_type", "Maintain weight") // Default
         val savedPosition = options.indexOf(savedGoalType)
         if (savedPosition != -1) {
             spinner.setSelection(savedPosition)
@@ -168,8 +166,8 @@ class MainActivity : ComponentActivity() {
                 if (input.isNotEmpty() && input.toIntOrNull() != null) {
                     val goal = input.toInt()
                     saveCalorieGoal(goal)
-                    val prefs = getSharedPreferences("CaloriePrefs", MODE_PRIVATE)
-                    prefs.edit().putString("goal_type", selectedGoalType).apply()
+                    val weightPrefs = getSharedPreferences("WeightPrefs", MODE_PRIVATE)
+                    weightPrefs.edit().putString("goal_type", selectedGoalType).apply()
                     Toast.makeText(this, "Goal set to $goal calories", Toast.LENGTH_SHORT).show()
                     updatePieChart()
                 } else {
