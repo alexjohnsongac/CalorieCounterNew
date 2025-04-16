@@ -19,6 +19,9 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import kotlinx.coroutines.launch
 import com.example.caloriecounternew.ui.theme.Blueish
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
+//import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : ComponentActivity() {
 
@@ -145,7 +148,12 @@ Women: BMR = (22.0462 * weight in kg) + (2.46063125 *  height (cm)) - 161
                 }
             }
             .setNeutralButton("Suggest Calorie Goal") { _, _ ->
-                //add custom dialog fragment
+                /*
+                val dialog = CalorieSuggestDialog()
+                dialog.listener = this@MainActivity
+                dialog.show(this@MainActivity.supportFragmentManager, "CalorieSuggestDialog")
+                */
+
             }
             .setNegativeButton("Cancel", null)
             .show()
