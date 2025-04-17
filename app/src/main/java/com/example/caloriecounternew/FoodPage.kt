@@ -1,9 +1,11 @@
 package com.example.caloriecounternew
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +23,8 @@ class FoodPage : ComponentActivity() {
     private lateinit var confirmButton: Button
     private lateinit var foodList: MutableList<FoodItem>
     private lateinit var adapter: FoodAdapter
+    private lateinit var customButton: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,13 +36,15 @@ class FoodPage : ComponentActivity() {
         // Initialize UI components
         recyclerView = findViewById(R.id.recyclerViewFoodList)
         confirmButton = findViewById(R.id.confirmButton)
+        customButton = findViewById(R.id.buttonAddCustom)
         foodList = mutableListOf()
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         // Initialize adapter
         adapter = FoodAdapter(foodList) { _, _ ->
             // Show/hide confirm button based on selection
-            confirmButton.visibility = if (adapter.getSelectedItems().isNotEmpty()) View.VISIBLE else View.GONE
+            confirmButton.visibility =
+                if (adapter.getSelectedItems().isNotEmpty()) View.VISIBLE else View.GONE
         }
         recyclerView.adapter = adapter
 
@@ -64,9 +70,34 @@ class FoodPage : ComponentActivity() {
                 ).show()
             }
         }
+        customButton.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.custom_food, null)
+
+            AlertDialog.Builder(this)
+                .setTitle("Create New Food Item")
+                .setView(dialogView)
+                .setPositiveButton("Save") { _, _ ->
+                    val editFoodName = dialogView.findViewById<EditText>(R.id.editTextCustomFood)
+                    val editCustomCals = dialogView.findViewById<EditText>(R.id.editTextCustomCals)
+
+                    val inputName = editFoodName.text.toString()
+                    val inputCals = editCustomCals.text.toString()
+
+                    if (inputName.isNotEmpty() && inputCals.isNotEmpty() && inputCals.toIntOrNull() != null) {
+                        val intCals = inputCals.toInt()
+                        saveCustomFood(inputName, inputCals)
+                        Toast.makeText(this, "Added Custom Food to List", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Please enter valid information", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
     }
 
-    private fun fetchFoodData() {
+        private fun fetchFoodData() {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 foodList.clear()
@@ -97,6 +128,13 @@ class FoodPage : ComponentActivity() {
                 ).show()
             }
         })
+    }
+    private fun saveCustomFood(foodname:String, foodCals:String){
+        val custom = FoodItem(
+            itemName = foodname,
+            calories = foodCals
+        )
+
     }
 
     private fun navigateToMainActivity() {

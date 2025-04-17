@@ -152,7 +152,7 @@ Women: BMR = (22.0462 * weight in kg) + (2.46063125 *  height (cm)) - 161
         sharedPreferences.edit().putInt(KEY_CALORIE_GOAL, goal).apply()
     }
 
-    fun getCalorieGoal(): Int {
+    public fun getCalorieGoal(): Int {
         return sharedPreferences.getInt(KEY_CALORIE_GOAL, DEFAULT_CALORIE_GOAL)
     }
 

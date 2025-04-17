@@ -4,4 +4,8 @@
     <string name="sign_out">Sign Out</string>
     <string name="sign_in">Sign In With Gustavus Account</string>
     <string name="set_calorie_goal">Set Calorie Goal</string>
+    <string name="custom_button">Add Custom Food</string>
+    <string name="custom_name">Please Enter the name of your custom food:</string>
+    <string name="custom_cals">Please Enter the calories in your custom food:</string>
+    <string name="daily_calorie_enter">Enter your daily calorie goal:</string>
 </resources>
