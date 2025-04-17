@@ -18,6 +18,18 @@
         android:text="Confirm"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="64dp"
         android:visibility="gone" /> <!-- Initially hidden -->
+
+    <!-- Custom food button -->
+    <Button
+        android:id="@+id/buttonAddCustom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/custom_button" />
 </RelativeLayout>

@@ -6,29 +6,29 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/daily_calorie_enter"
+        android:text="@string/custom_name"
         android:textSize="16sp"
         android:layout_marginBottom="8dp"/>
 
     <EditText
-        android:id="@+id/editTextCalorieGoal"
+        android:id="@+id/editTextCustomFood"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textSize="16sp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/custom_cals"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+    <EditText
+        android:id="@+id/editTextCustomCals"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:maxLines="1"
-        android:hint="2000"
+        android:hint="800"
         android:textSize="16sp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select if you'd like to maintain weight, lose weight, or gain mass:"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
-
-    <Spinner
-        android:id="@+id/spinnerStreakOptions"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp" />
 </LinearLayout>

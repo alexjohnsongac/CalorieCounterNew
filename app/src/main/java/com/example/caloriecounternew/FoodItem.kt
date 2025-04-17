@@ -13,7 +13,8 @@ data class FoodItem(//saving all fooditems properties
     val protein: String? = null,
     val sodium: String? = null,
     val totalCarbohydrates: String? = null,
-    val totalFat: String? = null
+    val totalFat: String? = null,
+    val isCustom: Boolean = false
 ) {
     companion object {
         //custom method to create a FoodItem from a DataSnapshot
@@ -31,7 +32,8 @@ data class FoodItem(//saving all fooditems properties
                 protein = snapshot["protein"] as? String,
                 sodium = snapshot["sodium"] as? String,
                 totalCarbohydrates = parseFlexibleValue(snapshot["total_carbohydrates"]), //string or double
-                totalFat = snapshot["total_fat"] as? String
+                totalFat = snapshot["total_fat"] as? String,
+                isCustom = snapshot["isCustom"] as? Boolean ?: false
             )
         }
 
