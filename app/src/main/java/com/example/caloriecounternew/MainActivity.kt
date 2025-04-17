@@ -51,6 +51,9 @@ class MainActivity : ComponentActivity() {
         val goToFoodPageButton: Button = findViewById(id.buttonGoToFoodPage)
         val setCalorieGoalButton: Button = findViewById(id.buttonSetCalorieGoal)
         val eggView: ImageView = findViewById(id.pixelEggView)
+        val firstView: ImageView = findViewById(id.pixelFirstView)
+        val secondView: ImageView = findViewById(id.pixelSecondView)
+
 
         // Check and update UI based on sign-in status
         updateUiVisibility(googleAuthClient.isSingedIn())
@@ -85,6 +88,25 @@ class MainActivity : ComponentActivity() {
 
         setCalorieGoalButton.setOnClickListener {
             showCalorieGoalDialog()
+        }
+
+        eggView.setOnClickListener{
+            eggView.animate().apply {
+                duration = 500
+                rotationYBy(360f)
+            }
+        }
+        firstView.setOnClickListener{
+            firstView.animate().apply {
+                duration = 500
+                rotationYBy(360f)
+            }
+        }
+        secondView.setOnClickListener{
+            secondView.animate().apply {
+                duration = 1000
+                rotationYBy(360f)
+            }
         }
     }
 
