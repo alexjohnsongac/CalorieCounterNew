@@ -17,6 +17,7 @@ gmsGoogleServices = "4.4.2"
 firebaseDatabase = "21.0.0"
 mpandroidchart = "v3.1.0"
 recyclerview = "1.4.0"
+constraintlayout = "2.2.1"
 
 [libraries]
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentialsPlayServicesAuth" }
@@ -43,6 +44,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version = "v3.1.0" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

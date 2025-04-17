@@ -8,10 +8,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
-class FoodAdapter(
-    private val foodList: List<FoodItem>,
+class FoodAdapter(private var foodList: List<FoodItem>,
     private val onItemSelected: (FoodItem, Boolean) -> Unit
 ) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
+
+    private var originalList = foodList.toMutableList()
 
     // Track selected items
     private val selectedItems = mutableSetOf<FoodItem>()
@@ -81,5 +82,17 @@ class FoodAdapter(
         notifyDataSetChanged()
 
         return Pair(count, calories)
+    }
+
+    fun filter(query: String) {
+        foodList = if (query.isBlank()) {
+            originalList
+        } else {
+            originalList.filter {
+                it.itemName?.contains(query, ignoreCase = true) == true
+            }
+        }
+
+        notifyDataSetChanged()
     }
 }
