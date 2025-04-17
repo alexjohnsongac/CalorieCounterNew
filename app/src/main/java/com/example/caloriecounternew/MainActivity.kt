@@ -23,6 +23,9 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import kotlinx.coroutines.launch
 import com.example.caloriecounternew.ui.theme.Blueish
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
+//import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : ComponentActivity() {
 
@@ -174,6 +177,14 @@ class MainActivity : ComponentActivity() {
                     Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show()
                 }
             }
+            .setNeutralButton("Suggest Calorie Goal") { _, _ ->
+                /*
+                val dialog = CalorieSuggestDialog()
+                dialog.listener = this@MainActivity
+                dialog.show(this@MainActivity.supportFragmentManager, "CalorieSuggestDialog")
+                */
+
+            }
             .setNegativeButton("Cancel", null)
             .show()
     }
@@ -182,7 +193,7 @@ class MainActivity : ComponentActivity() {
         sharedPreferences.edit().putInt(KEY_CALORIE_GOAL, goal).apply()
     }
 
-    fun getCalorieGoal(): Int {
+    private fun getCalorieGoal(): Int {
         return sharedPreferences.getInt(KEY_CALORIE_GOAL, DEFAULT_CALORIE_GOAL)
     }
 
