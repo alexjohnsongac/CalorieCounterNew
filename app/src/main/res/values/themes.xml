@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base application theme -->
+    <style name="Theme.CalorieCounterNew" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Primary brand colors -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
 
-    <style name="Theme.CalorieCounterNew" parent="android:Theme.Material.Light.NoActionBar" />
+        <!-- Customize your theme here -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- SearchView styling -->
+        <item name="searchViewStyle">@style/CustomSearchView</item>
+    </style>
+
+    <!-- Custom SearchView style -->
+    <style name="CustomSearchView" parent="Widget.AppCompat.SearchView">
+        <item name="queryBackground">@drawable/search_view_bg</item>
+        <item name="searchHintIcon">@null</item>
+    </style>
+
+    <!-- For night theme support -->
+    <style name="Theme.CalorieCounterNew.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>
