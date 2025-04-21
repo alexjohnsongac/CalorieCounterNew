@@ -196,14 +196,34 @@ class MainActivity : ComponentActivity() {
                     .setTitle("Suggest Calorie Goal")
                     .setView(suggestView)
                     .setPositiveButton("Calculate") { _, _ ->
-                        val weight = weightInput.text.toString().toDoubleOrNull() ?: 0.0
-                        val height = heightInput.text.toString().toDoubleOrNull() ?: 0.0
+                        val weightStr = weightInput.text.toString()
+                        val heightStr = heightInput.text.toString()
                         val sexId = sexGroup.checkedRadioButtonId
+
+                        if (weightStr.isBlank() || heightStr.isBlank()) {
+                            Toast.makeText(this, "Please enter weight and height", Toast.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+
+                        if (sexId == -1) {
+                            Toast.makeText(this, "Please select sex", Toast.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+
+                        val weight = weightStr.toDoubleOrNull()
+                        val height = heightStr.toDoubleOrNull()
+
+                        if (weight == null || height == null || weight <= 0 || height <= 0) {
+                            Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+
                         val calories = calculateCalories(weight, height, sexId)
 
-                        Toast.makeText(this, "Suggested Calories: $calories", Toast.LENGTH_LONG).show()
-                        //save into the goal EditText
+                        saveCalorieGoal(calories) // actually set calorie goal to suggested value
                         editTextGoal.setText(calories.toString())
+                        updatePieChart()
+                        Toast.makeText(this, "Suggested Calories: $calories", Toast.LENGTH_LONG).show()
                     }
                     .setNegativeButton("Cancel", null)
                     .show()
