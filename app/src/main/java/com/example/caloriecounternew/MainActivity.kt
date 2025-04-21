@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import com.example.caloriecounternew.ui.theme.Blueish
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import android.widget.RadioGroup
 //import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : ComponentActivity() {
@@ -162,6 +163,14 @@ class MainActivity : ComponentActivity() {
         pieChart.visibility = if (isSignedIn) View.VISIBLE else View.GONE
     }
 
+    private fun calculateCalories(weight: Double, height: Double, sexId: Int): Int {
+        //BMR estimate (Mifflin-St Jeor formula)
+        val base = 10 * weight + 6.25 * height - 5 * 20
+        val adjustment = if (sexId == R.id.male_option) 5 else -161
+        return (base + adjustment).toInt()
+    }
+
+
     private fun showCalorieGoalDialog() {
         val dialogView = layoutInflater.inflate(layout.prompt_calories, null)
         val editTextGoal = dialogView.findViewById<EditText>(id.editTextCalorieGoal)
@@ -200,11 +209,46 @@ class MainActivity : ComponentActivity() {
                 }
             }
             .setNeutralButton("Suggest Calorie Goal") { _, _ ->
-                /*
-                val dialog = CalorieSuggestDialog()
-                dialog.listener = this@MainActivity
-                dialog.show(this@MainActivity.supportFragmentManager, "CalorieSuggestDialog")
-                */
+                val suggestView = layoutInflater.inflate(R.layout.fragment_calorie_suggester_dialog_fragment, null)
+                val weightInput = suggestView.findViewById<EditText>(R.id.weight_input)
+                val heightInput = suggestView.findViewById<EditText>(R.id.height_input)
+                val sexGroup = suggestView.findViewById<RadioGroup>(R.id.sex_input)
+
+                AlertDialog.Builder(this)
+                    .setTitle("Suggest Calorie Goal")
+                    .setView(suggestView)
+                    .setPositiveButton("Calculate") { _, _ ->
+                        val weightStr = weightInput.text.toString()
+                        val heightStr = heightInput.text.toString()
+                        val sexId = sexGroup.checkedRadioButtonId
+
+                        if (weightStr.isBlank() || heightStr.isBlank()) {
+                            Toast.makeText(this, "Please enter weight and height", Toast.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+
+                        if (sexId == -1) {
+                            Toast.makeText(this, "Please select sex", Toast.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+
+                        val weight = weightStr.toDoubleOrNull()
+                        val height = heightStr.toDoubleOrNull()
+
+                        if (weight == null || height == null || weight <= 0 || height <= 0) {
+                            Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+
+                        val calories = calculateCalories(weight, height, sexId)
+
+                        saveCalorieGoal(calories) // actually set calorie goal to suggested value
+                        editTextGoal.setText(calories.toString())
+                        updatePieChart()
+                        Toast.makeText(this, "Suggested Calories: $calories", Toast.LENGTH_LONG).show()
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
 
             }
             .setNegativeButton("Cancel", null)
