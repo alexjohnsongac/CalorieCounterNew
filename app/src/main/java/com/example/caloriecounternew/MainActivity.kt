@@ -202,9 +202,11 @@ class MainActivity : ComponentActivity() {
                         val calories = calculateCalories(weight, height, sexId)
 
                         Toast.makeText(this, "Suggested Calories: $calories", Toast.LENGTH_LONG).show()
-                        // Todo save into the goal EditText
+                        //save into the goal EditText
                         editTextGoal.setText(calories.toString())
                     }
+                    .setNegativeButton("Cancel", null)
+                    .show()
 
             }
             .setNegativeButton("Cancel", null)
