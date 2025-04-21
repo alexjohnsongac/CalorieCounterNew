@@ -9,3 +9,14 @@
 .gradle/file-system.probe
 .DS_Store
 .DS_Store
+/.gradle/8.11.1
+.gradle/file-system.probe
+.gradle/buildOutputCleanup/outputFiles.bin
+.gradle/buildOutputCleanup/buildOutputCleanup.lock
+.gradle/8.11.1/fileHashes/resourceHashesCache.bin
+.gradle/8.11.1/fileHashes/fileHashes.lock
+.gradle/8.11.1/fileHashes/fileHashes.bin
+.gradle/8.11.1/executionHistory/executionHistory.lock
+.gradle/8.11.1/executionHistory/executionHistory.bin
+*.probe
+*.bin
