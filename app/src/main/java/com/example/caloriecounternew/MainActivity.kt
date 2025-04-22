@@ -158,7 +158,10 @@ class MainActivity : ComponentActivity() {
             if (isSignedIn && CalorieStreakManager.getStreak(this) >= 2 &&
                 CalorieStreakManager.getStreak(this) < 4) View.VISIBLE else View.GONE
         findViewById<ImageView>(id.pixelSecondView).visibility =
-            if (isSignedIn && CalorieStreakManager.getStreak(this) >= 4) View.VISIBLE else View.GONE
+            if (isSignedIn && CalorieStreakManager.getStreak(this) >= 4 &&
+                CalorieStreakManager.getStreak(this) < 6) View.VISIBLE else View.GONE
+        findViewById<ImageView>(id.pixelThirdView).visibility =
+            if (isSignedIn && CalorieStreakManager.getStreak(this) >= 6) View.VISIBLE else View.GONE
         findViewById<TextView>(id.textViewCalorieStreak).visibility = if (isSignedIn) View.VISIBLE else View.GONE
         pieChart.visibility = if (isSignedIn) View.VISIBLE else View.GONE
     }
