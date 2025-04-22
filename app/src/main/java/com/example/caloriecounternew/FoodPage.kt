@@ -78,32 +78,19 @@ class FoodPage : ComponentActivity() {
     }
 
         private fun fetchFoodData() {
-        database.addListenerForSingleValueEvent(object : ValueEventListener {
+            // Start with local custom foods
+            val combinedList = localFoodManager.getCustomFoods().toMutableList()
+            database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val newFoods = mutableListOf<FoodItem>()
-                //testing commented out foodList.clear()
 
                 if (snapshot.exists()) {
                     snapshot.children.forEach {
                         val foodItemMap = it.value as? Map<String, Any?>
                         foodItemMap?.let { map ->
-                            newFoods.add(FoodItem.fromSnapshot(map))
+                            combinedList.add(FoodItem.fromSnapshot(map))
                         }
                     }
-                    // Add local custom foods
-                    newFoods.addAll(localFoodManager.getCustomFoods())
-
-                    // Efficient update
-                    val oldSize = foodList.size
-                    foodList.clear()
-                    foodList.addAll(newFoods)
-
-                    if (oldSize == 0) {
-                        adapter.notifyItemRangeInserted(0, newFoods.size)
-                    } else {
-                        adapter.notifyItemRangeChanged(0, oldSize)
-                        adapter.notifyItemRangeInserted(oldSize, newFoods.size - oldSize)
-                    }
+                    updateFoodList(combinedList)
                 } else {
                     Toast.makeText(
                         this@FoodPage,
@@ -111,21 +98,32 @@ class FoodPage : ComponentActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
-                adapter.notifyDataSetChanged()
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
-                // Load only local foods if Firebase fails
-                foodList.clear()
-                foodList.addAll(localFoodManager.getCustomFoods())
-                adapter.notifyDataSetChanged()
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
+                    updateFoodList(combinedList) // Still show local foods
+                }
+            })
         }
 
+    private fun updateFoodList(newList: List<FoodItem>) {
+        val oldSize = foodList.size
+        foodList.clear()
+        foodList.addAll(newList)
 
+        if (oldSize == 0) {
+            adapter.notifyItemRangeInserted(0, newList.size)
+        } else {
+            val changedCount = minOf(oldSize, newList.size)
+            adapter.notifyItemRangeChanged(0, changedCount)
+            if (newList.size > oldSize) {
+                adapter.notifyItemRangeInserted(oldSize, newList.size - oldSize)
+            } else if (newList.size < oldSize) {
+                adapter.notifyItemRangeRemoved(newList.size, oldSize - newList.size)
+            }
+        }
+    }
     private fun showCustomFoodDialog() {
         val dialogView = layoutInflater.inflate(R.layout.custom_food, null)
         val editFoodName = dialogView.findViewById<EditText>(R.id.editTextCustomFood)
@@ -156,10 +154,13 @@ class FoodPage : ComponentActivity() {
             isCustom = true
         )
 
+        // Remember currently selected items
+        val previouslySelected = adapter.getSelectedItems()
+
         // Add to beginning of list
         foodList.add(0, customFood)
 
-        // Save to local storage
+        // Save to local storage (new foods always added to start)
         val currentCustomFoods = localFoodManager.getCustomFoods().toMutableList()
         currentCustomFoods.add(0, customFood)
         localFoodManager.saveCustomFoods(currentCustomFoods)
@@ -168,9 +169,8 @@ class FoodPage : ComponentActivity() {
         adapter.notifyItemInserted(0)
         recyclerView.scrollToPosition(0)
 
-        // Handle selection
-        adapter.deselectAll()
-        adapter.selectItem(0)
+        // Restore previous selections and select new item
+        adapter.selectItem(0, keepExisting = true)
 
         confirmButton.visibility = View.VISIBLE
         Toast.makeText(this, "$foodName added to your foods", Toast.LENGTH_SHORT).show()
