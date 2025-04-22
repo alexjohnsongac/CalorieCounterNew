@@ -82,4 +82,7 @@ dependencies {
     // Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //Custom Food Handler
+    implementation(libs.gson)
 }

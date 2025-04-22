@@ -1,5 +1,6 @@
 package com.example.caloriecounternew
 
+import LocalFoodManager
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -24,11 +25,12 @@ class FoodPage : ComponentActivity() {
     private lateinit var foodList: MutableList<FoodItem>
     private lateinit var adapter: FoodAdapter
     private lateinit var customButton: Button
-
+    private lateinit var localFoodManager: LocalFoodManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_food_page)
+        localFoodManager = LocalFoodManager(this)
 
         // Initialize Firebase
         database = FirebaseDatabase.getInstance().reference
@@ -78,14 +80,29 @@ class FoodPage : ComponentActivity() {
         private fun fetchFoodData() {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                foodList.clear()
+                val newFoods = mutableListOf<FoodItem>()
+                //testing commented out foodList.clear()
 
                 if (snapshot.exists()) {
                     snapshot.children.forEach {
                         val foodItemMap = it.value as? Map<String, Any?>
                         foodItemMap?.let { map ->
-                            foodList.add(FoodItem.fromSnapshot(map))
+                            newFoods.add(FoodItem.fromSnapshot(map))
                         }
+                    }
+                    // Add local custom foods
+                    newFoods.addAll(localFoodManager.getCustomFoods())
+
+                    // Efficient update
+                    val oldSize = foodList.size
+                    foodList.clear()
+                    foodList.addAll(newFoods)
+
+                    if (oldSize == 0) {
+                        adapter.notifyItemRangeInserted(0, newFoods.size)
+                    } else {
+                        adapter.notifyItemRangeChanged(0, oldSize)
+                        adapter.notifyItemRangeInserted(oldSize, newFoods.size - oldSize)
                     }
                 } else {
                     Toast.makeText(
@@ -99,14 +116,14 @@ class FoodPage : ComponentActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(
-                    this@FoodPage,
-                    "Failed to load food data: ${error.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
+                // Load only local foods if Firebase fails
+                foodList.clear()
+                foodList.addAll(localFoodManager.getCustomFoods())
+                adapter.notifyDataSetChanged()
             }
         })
-    }
+        }
 
 
     private fun showCustomFoodDialog() {
@@ -133,7 +150,6 @@ class FoodPage : ComponentActivity() {
     }
 
     private fun saveCustomFood(foodName: String, calories: Int) {
-        // Create minimal FoodItem with just name and calories
         val customFood = FoodItem(
             itemName = foodName,
             calories = "$calories kcal",
@@ -143,16 +159,21 @@ class FoodPage : ComponentActivity() {
         // Add to beginning of list
         foodList.add(0, customFood)
 
-        // Update adapter
+        // Save to local storage
+        val currentCustomFoods = localFoodManager.getCustomFoods().toMutableList()
+        currentCustomFoods.add(0, customFood)
+        localFoodManager.saveCustomFoods(currentCustomFoods)
+
+        // Optimized UI updates
         adapter.notifyItemInserted(0)
-
-        // Clear previous selections and select new item
-        adapter.deselectAll()
-        adapter.selectItem(customFood)
-
-        // Scroll to show new item and enable confirm button
         recyclerView.scrollToPosition(0)
+
+        // Handle selection
+        adapter.deselectAll()
+        adapter.selectItem(0)
+
         confirmButton.visibility = View.VISIBLE
+        Toast.makeText(this, "$foodName added to your foods", Toast.LENGTH_SHORT).show()
     }
 
     private fun navigateToMainActivity() {
