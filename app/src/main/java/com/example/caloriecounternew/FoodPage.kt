@@ -1,5 +1,6 @@
 package com.example.caloriecounternew
 
+import LocalFoodManager
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
@@ -24,11 +25,12 @@ class FoodPage : ComponentActivity() {
     private lateinit var foodList: MutableList<FoodItem>
     private lateinit var adapter: FoodAdapter
     private lateinit var customButton: Button
-
+    private lateinit var localFoodManager: LocalFoodManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_food_page)
+        localFoodManager = LocalFoodManager(this)
 
         // Initialize Firebase
         database = FirebaseDatabase.getInstance().reference
@@ -71,44 +73,24 @@ class FoodPage : ComponentActivity() {
             }
         }
         customButton.setOnClickListener {
-            val dialogView = layoutInflater.inflate(R.layout.custom_food, null)
-
-            AlertDialog.Builder(this)
-                .setTitle("Create New Food Item")
-                .setView(dialogView)
-                .setPositiveButton("Save") { _, _ ->
-                    val editFoodName = dialogView.findViewById<EditText>(R.id.editTextCustomFood)
-                    val editCustomCals = dialogView.findViewById<EditText>(R.id.editTextCustomCals)
-
-                    val inputName = editFoodName.text.toString()
-                    val inputCals = editCustomCals.text.toString()
-
-                    if (inputName.isNotEmpty() && inputCals.isNotEmpty() && inputCals.toIntOrNull() != null) {
-                        val intCals = inputCals.toInt()
-                        saveCustomFood(inputName, inputCals)
-                        Toast.makeText(this, "Added Custom Food to List", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this, "Please enter valid information", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
+            showCustomFoodDialog()
         }
     }
 
         private fun fetchFoodData() {
-        database.addListenerForSingleValueEvent(object : ValueEventListener {
+            // Start with local custom foods
+            val combinedList = localFoodManager.getCustomFoods().toMutableList()
+            database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                foodList.clear()
 
                 if (snapshot.exists()) {
                     snapshot.children.forEach {
                         val foodItemMap = it.value as? Map<String, Any?>
                         foodItemMap?.let { map ->
-                            foodList.add(FoodItem.fromSnapshot(map))
+                            combinedList.add(FoodItem.fromSnapshot(map))
                         }
                     }
+                    updateFoodList(combinedList)
                 } else {
                     Toast.makeText(
                         this@FoodPage,
@@ -116,25 +98,82 @@ class FoodPage : ComponentActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
-                adapter.notifyDataSetChanged()
             }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(
-                    this@FoodPage,
-                    "Failed to load food data: ${error.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
+                    updateFoodList(combinedList) // Still show local foods
+                }
+            })
+        }
+
+    private fun updateFoodList(newList: List<FoodItem>) {
+        val oldSize = foodList.size
+        foodList.clear()
+        foodList.addAll(newList)
+
+        if (oldSize == 0) {
+            adapter.notifyItemRangeInserted(0, newList.size)
+        } else {
+            val changedCount = minOf(oldSize, newList.size)
+            adapter.notifyItemRangeChanged(0, changedCount)
+            if (newList.size > oldSize) {
+                adapter.notifyItemRangeInserted(oldSize, newList.size - oldSize)
+            } else if (newList.size < oldSize) {
+                adapter.notifyItemRangeRemoved(newList.size, oldSize - newList.size)
             }
-        })
+        }
     }
-    private fun saveCustomFood(foodname:String, foodCals:String){
-        val custom = FoodItem(
-            itemName = foodname,
-            calories = foodCals
+    private fun showCustomFoodDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.custom_food, null)
+        val editFoodName = dialogView.findViewById<EditText>(R.id.editTextCustomFood)
+        val editCustomCals = dialogView.findViewById<EditText>(R.id.editTextCustomCals)
+
+        AlertDialog.Builder(this)
+            .setTitle("Create New Food Item")
+            .setView(dialogView)
+            .setPositiveButton("Save") { _, _ ->
+                val foodName = editFoodName.text.toString().trim()
+                val calories = editCustomCals.text.toString().trim()
+
+                if (foodName.isNotEmpty() && calories.isNotEmpty() && calories.toIntOrNull() != null) {
+                    saveCustomFood(foodName, calories.toInt())
+                    Toast.makeText(this, "$foodName added to list", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Please enter valid name and calories", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun saveCustomFood(foodName: String, calories: Int) {
+        val customFood = FoodItem(
+            itemName = foodName,
+            calories = "$calories kcal",
+            isCustom = true
         )
 
+        // Remember currently selected items
+        val previouslySelected = adapter.getSelectedItems()
+
+        // Add to beginning of list
+        foodList.add(0, customFood)
+
+        // Save to local storage (new foods always added to start)
+        val currentCustomFoods = localFoodManager.getCustomFoods().toMutableList()
+        currentCustomFoods.add(0, customFood)
+        localFoodManager.saveCustomFoods(currentCustomFoods)
+
+        // Optimized UI updates
+        adapter.notifyItemInserted(0)
+        recyclerView.scrollToPosition(0)
+
+        // Restore previous selections and select new item
+        adapter.selectItem(0, keepExisting = true)
+
+        confirmButton.visibility = View.VISIBLE
+        Toast.makeText(this, "$foodName added to your foods", Toast.LENGTH_SHORT).show()
     }
 
     private fun navigateToMainActivity() {
