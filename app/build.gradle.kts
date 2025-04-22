@@ -18,7 +18,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -68,7 +67,9 @@ dependencies {
     implementation(libs.googleid)
 
     // Chart library
-    implementation(libs.mpandroidchart)  // Using version catalog
+    implementation(libs.mpandroidchart)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.appcompat)  // Using version catalog
     // Alternative direct implementation:
     // implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 

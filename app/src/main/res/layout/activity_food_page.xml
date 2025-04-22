@@ -4,11 +4,21 @@
     android:layout_height="match_parent">
 
     <!-- RecyclerView -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="5dp"
+        android:layout_marginTop="20dp"
+        android:iconifiedByDefault="false"
+        android:queryHint="Search food items" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFoodList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp" />
+        android:layout_below="@id/searchView"/>
 
     <!-- Confirm Button -->
     <Button
