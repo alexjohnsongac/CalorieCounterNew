@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
         val eggView: ImageView = findViewById(id.pixelEggView)
         val firstView: ImageView = findViewById(id.pixelFirstView)
         val secondView: ImageView = findViewById(id.pixelSecondView)
+        val thirdView: ImageView = findViewById(id.pixelThirdView)
 
 
         // Check and update UI based on sign-in status
@@ -108,6 +109,12 @@ class MainActivity : ComponentActivity() {
         }
         secondView.setOnClickListener{
             secondView.animate().apply {
+                duration = 1000
+                rotationYBy(360f)
+            }
+        }
+        thirdView.setOnClickListener{
+            thirdView.animate().apply {
                 duration = 1000
                 rotationYBy(360f)
             }
