@@ -9,11 +9,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class FoodAdapter(
-    private val foodList: List<FoodItem>,
+    private var foodList: List<FoodItem>,
     private val onItemSelected: (FoodItem, Boolean) -> Unit
 ) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
 
-    // Track selected items
+    private val originalList = mutableListOf<FoodItem>().apply { addAll(foodList) }
     private val selectedItems = mutableSetOf<FoodItem>()
 
     class FoodViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -33,7 +33,6 @@ class FoodAdapter(
         holder.foodNameTextView.text = foodItem.itemName ?: "Unknown"
         holder.caloriesTextView.text = "Calories: ${foodItem.calories ?: "0"}"
 
-        // Highlight selected items
         if (selectedItems.contains(foodItem)) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.grey))
         } else {
@@ -63,10 +62,6 @@ class FoodAdapter(
 
     fun getSelectedItems(): List<FoodItem> = selectedItems.toList()
 
-    /**
-     * Adds selected items to daily consumption list
-     * @return Pair of (number of items added, total calories added)
-     */
     fun addToDaily(): Pair<Int, Int> {
         val itemsToAdd = getSelectedItems()
         val count = itemsToAdd.size
@@ -76,10 +71,26 @@ class FoodAdapter(
             ConsumedDailyList.addFoodItem(item)
         }
 
-        // Clear selection after adding
         selectedItems.clear()
         notifyDataSetChanged()
 
         return Pair(count, calories)
+    }
+
+    fun filter(query: String) {
+        foodList = if (query.isEmpty()) {
+            originalList
+        } else {
+            originalList.filter { foodItem ->
+                foodItem.itemName?.lowercase()?.contains(query.lowercase()) == true
+            }
+        }
+        notifyDataSetChanged()
+    }
+
+    fun updateOriginalList(newList: List<FoodItem>) {
+        originalList.clear()
+        originalList.addAll(newList)
+        filter("") // Reset to show all items
     }
 }
