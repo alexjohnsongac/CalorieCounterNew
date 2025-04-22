@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class FoodAdapter(
-    private val foodList: List<FoodItem>,
+    private val foodList: MutableList<FoodItem>,
     private val onItemSelected: (FoodItem, Boolean) -> Unit
 ) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
 
@@ -54,6 +54,16 @@ class FoodAdapter(
 
     override fun getItemCount(): Int = foodList.size
 
+    fun selectItem(foodItem: FoodItem) {
+        selectedItems.clear()
+        selectedItems.add(foodItem)
+        notifyDataSetChanged()
+    }
+
+    fun deselectAll() {
+        selectedItems.clear()
+        notifyDataSetChanged()
+    }
     fun getTotalCalories(): Int {
         return selectedItems.sumOf { foodItem ->
             val caloriesString = foodItem.calories ?: "0 kcal"
