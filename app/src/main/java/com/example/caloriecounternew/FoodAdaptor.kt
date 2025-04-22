@@ -52,6 +52,28 @@ class FoodAdapter(
     }
 
     override fun getItemCount(): Int = foodList.size
+    fun selectItem(position: Int, keepExisting: Boolean = false) {
+        if (!keepExisting) {
+            deselectAll()
+        }
+
+        if (position in 0 until foodList.size) {
+            val item = foodList[position]
+            if (selectedItems.add(item)) {
+                notifyItemChanged(position)
+                onItemSelected(item, true)
+            }
+        }
+    }
+
+    fun deselectAll() {
+        val previouslySelected = selectedItems.toList()
+        selectedItems.clear()
+        previouslySelected.forEach { item ->
+            val pos = foodList.indexOfFirst { it == item }
+            if (pos != -1) notifyItemChanged(pos)
+        }
+    }
 
     fun getTotalCalories(): Int {
         return selectedItems.sumOf { foodItem ->

@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
         private const val PREFS_NAME = "CalorieCounterPrefs"
         private const val KEY_CALORIE_GOAL = "daily_calorie_goal"
         private const val DEFAULT_CALORIE_GOAL = 2000
+        private const val FOOD_PAGE_REQUEST_CODE = 1001 // Add this line
     }
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -267,6 +268,23 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun navigateToFoodPage() {
-        startActivity(Intent(this, FoodPage::class.java))
+        val intent = Intent(this, FoodPage::class.java)
+        startActivityForResult(intent, FOOD_PAGE_REQUEST_CODE)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == FOOD_PAGE_REQUEST_CODE && resultCode == RESULT_OK) {
+            val totalCalories = data?.getIntExtra("total_calories", 0) ?: 0
+            val foodNames = data?.getStringExtra("food_names") ?: ""
+            val foodItems = data?.getSerializableExtra("food_items") as? ArrayList<FoodItem>
+
+            // Update your daily calorie count
+            ConsumedDailyList.addCalories(totalCalories)
+            ConsumedDailyList.addFoodItems(foodItems ?: arrayListOf())
+
+            // Update UI
+            updatePieChart()
+            Toast.makeText(this, "Added $totalCalories calories from: $foodNames", Toast.LENGTH_SHORT).show()
+        }
     }
 }

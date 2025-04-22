@@ -8,7 +8,6 @@ import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.caloriecounternew.databinding.ActivityFoodPageBinding
@@ -18,18 +17,16 @@ class FoodPage : ComponentActivity() {
 
     private lateinit var binding: ActivityFoodPageBinding
     private lateinit var database: DatabaseReference
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var confirmButton: Button
     private lateinit var foodList: MutableList<FoodItem>
     private lateinit var adapter: FoodAdapter
-    private lateinit var customButton: Button
     private lateinit var localFoodManager: LocalFoodManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFoodPageBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setContentView(R.layout.activity_food_page)
+
+        // Initialize LocalFoodManager with your existing implementation
         localFoodManager = LocalFoodManager(this)
 
         // Initialize Firebase
@@ -37,22 +34,16 @@ class FoodPage : ComponentActivity() {
 
         // Initialize UI components
         foodList = mutableListOf()
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = FoodAdapter(foodList) { _, _ -> toggleConfirmButtonVisibility() }
 
-        // Initialize adapter
-        adapter = FoodAdapter(foodList) { _, _ ->
-            // Show/hide confirm button based on selection
-            confirmButton.visibility =
-                if (adapter.getSelectedItems().isNotEmpty()) View.VISIBLE else View.GONE
-        }
-        recyclerView.adapter = adapter
+        setupRecyclerView()
+        setupSearchView()
+        setupButtons()
 
-        // Fetch food data
         fetchFoodData()
     }
 
     private fun setupRecyclerView() {
-        adapter = FoodAdapter(foodList) { _, _ -> toggleConfirmButtonVisibility() }
         binding.recyclerViewFoodList.apply {
             layoutManager = LinearLayoutManager(this@FoodPage)
             adapter = this@FoodPage.adapter
@@ -63,7 +54,6 @@ class FoodPage : ComponentActivity() {
         binding.searchView.apply {
             setIconifiedByDefault(false)
             queryHint = "Search food items"
-            clearFocus()
 
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?) = false
@@ -90,79 +80,41 @@ class FoodPage : ComponentActivity() {
     }
 
     private fun fetchFoodData() {
+        // Start with local custom foods
+        val combinedList = localFoodManager.getCustomFoods().toMutableList()
+
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val tempList = mutableListOf<FoodItem>()
-
-                if (snapshot.exists()) {
-                    snapshot.children.forEach { data ->
-                        val foodItemMap = data.value as? Map<String, Any?>
-                        foodItemMap?.let { map ->
-                            FoodItem.fromSnapshot(map)?.let { foodItem ->
-                                tempList.add(foodItem)
-                            }
-                        }
-                    }
-                    foodList.clear()
-                    foodList.addAll(tempList)
-                    adapter.updateOriginalList(tempList)
-                } else {
-                    showToast("No food data available")
-                }
-            }
-        }
-        customButton.setOnClickListener {
-            showCustomFoodDialog()
-        }
-    }
-
-        private fun fetchFoodData() {
-            // Start with local custom foods
-            val combinedList = localFoodManager.getCustomFoods().toMutableList()
-            database.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-
                 if (snapshot.exists()) {
                     snapshot.children.forEach {
                         val foodItemMap = it.value as? Map<String, Any?>
                         foodItemMap?.let { map ->
-                            combinedList.add(FoodItem.fromSnapshot(map))
+                            FoodItem.fromSnapshot(map)?.let { foodItem ->
+                                // Avoid duplicates by checking if item already exists
+                                if (!combinedList.any { it.itemName == foodItem.itemName }) {
+                                    combinedList.add(foodItem)
+                                }
+                            }
                         }
                     }
-                    updateFoodList(combinedList)
-                } else {
-                    Toast.makeText(
-                        this@FoodPage,
-                        "No food data available",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
+                updateFoodList(combinedList)
             }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
-                    updateFoodList(combinedList) // Still show local foods
-                }
-            })
-        }
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
+                updateFoodList(combinedList) // Still show local foods
+            }
+        })
+    }
 
     private fun updateFoodList(newList: List<FoodItem>) {
-        val oldSize = foodList.size
         foodList.clear()
         foodList.addAll(newList)
-
-        if (oldSize == 0) {
-            adapter.notifyItemRangeInserted(0, newList.size)
-        } else {
-            val changedCount = minOf(oldSize, newList.size)
-            adapter.notifyItemRangeChanged(0, changedCount)
-            if (newList.size > oldSize) {
-                adapter.notifyItemRangeInserted(oldSize, newList.size - oldSize)
-            } else if (newList.size < oldSize) {
-                adapter.notifyItemRangeRemoved(newList.size, oldSize - newList.size)
-            }
-        }
+        adapter.updateOriginalList(newList)
+        adapter.notifyDataSetChanged()
     }
+
     private fun showCustomFoodDialog() {
         val dialogView = layoutInflater.inflate(R.layout.custom_food, null)
         val editFoodName = dialogView.findViewById<EditText>(R.id.editTextCustomFood)
@@ -177,7 +129,6 @@ class FoodPage : ComponentActivity() {
 
                 if (foodName.isNotEmpty() && calories.isNotEmpty() && calories.toIntOrNull() != null) {
                     saveCustomFood(foodName, calories.toInt())
-                    Toast.makeText(this, "$foodName added to list", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this, "Please enter valid name and calories", Toast.LENGTH_SHORT).show()
                 }
@@ -193,38 +144,42 @@ class FoodPage : ComponentActivity() {
             isCustom = true
         )
 
-        // Remember currently selected items
-        val previouslySelected = adapter.getSelectedItems()
-
-        // Add to beginning of list
-        foodList.add(0, customFood)
-
-        // Save to local storage (new foods always added to start)
+        // Get current custom foods, add new one, and save
         val currentCustomFoods = localFoodManager.getCustomFoods().toMutableList()
-        currentCustomFoods.add(0, customFood)
+        currentCustomFoods.add(0, customFood) // Add to beginning
         localFoodManager.saveCustomFoods(currentCustomFoods)
 
-        // Optimized UI updates
+        // Update the displayed list
+        foodList.add(0, customFood)
+        adapter.updateOriginalList(foodList)
         adapter.notifyItemInserted(0)
-        recyclerView.scrollToPosition(0)
+        binding.recyclerViewFoodList.scrollToPosition(0)
 
-        // Restore previous selections and select new item
+        // Select the new item
         adapter.selectItem(0, keepExisting = true)
+        toggleConfirmButtonVisibility()
 
-        confirmButton.visibility = View.VISIBLE
         Toast.makeText(this, "$foodName added to your foods", Toast.LENGTH_SHORT).show()
     }
 
-    private fun navigateToMainActivity() {
-        Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(this)
-        }
-        startActivity(intent)
-        finish()
-    }
+    private fun handleConfirmButtonClick() {
+        val selectedItems = adapter.getSelectedItems()
+        if (selectedItems.isNotEmpty()) {
+            // Calculate total calories and prepare food names
+            val totalCalories = selectedItems.sumOf { foodItem ->
+                foodItem.calories?.replace(" kcal", "")?.toIntOrNull() ?: 0
+            }
 
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            val foodNames = selectedItems.joinToString(", ") { it.itemName ?: "" }
+
+            // Return data to MainActivity
+            val resultIntent = Intent().apply {
+                putExtra("total_calories", totalCalories)
+                putExtra("food_names", foodNames)
+                putExtra("food_items", ArrayList(selectedItems))
+            }
+            setResult(RESULT_OK, resultIntent)
+            finish()
+        }
     }
 }
