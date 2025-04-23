@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class FoodAdapter(
-    private var foodList: MutableList<FoodItem>,
+    private var foodList: List<FoodItem>,
     private val onItemSelected: (FoodItem, Boolean) -> Unit
 ) : RecyclerView.Adapter<FoodAdapter.FoodViewHolder>() {
 
@@ -102,12 +102,12 @@ class FoodAdapter(
     fun filter(query: String) {
         foodList = if (query.isEmpty()) {
             originalList
-        } else ({
+        } else {
             originalList.filter { foodItem ->
                 foodItem.itemName?.lowercase()?.contains(query.lowercase()) == true
             }
-        })
-        notifyDataSetChanged()
+        }
+        notifyDataSetChanged() // Important to refresh the list after filtering
     }
 
     fun updateOriginalList(newList: List<FoodItem>) {

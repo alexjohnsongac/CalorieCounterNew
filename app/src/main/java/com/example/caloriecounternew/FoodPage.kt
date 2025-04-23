@@ -110,13 +110,10 @@ class FoodPage : AppCompatActivity() {
 
             override fun onCancelled(error: DatabaseError) {
                 showToast("Failed to load food data: ${error.message}")
+                updateFoodList(combinedList) // Still show local foods
             }
         })
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
-                    updateFoodList(combinedList) // Still show local foods
-                }
-            })
+
         }
 
     private fun updateFoodList(newList: List<FoodItem>) {
