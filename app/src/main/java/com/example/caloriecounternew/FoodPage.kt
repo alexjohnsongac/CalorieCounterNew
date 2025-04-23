@@ -52,6 +52,9 @@ class FoodPage : AppCompatActivity() {
         fetchFoodData()
 
         confirmButton.setOnClickListener { handleConfirmButtonClick() }
+        customButton.setOnClickListener {
+            showCustomFoodDialog()
+        }
     }
 
     private fun setUpSearchView() {
@@ -77,40 +80,42 @@ class FoodPage : AppCompatActivity() {
         } else {
             View.GONE
         }
-        customButton.setOnClickListener {
-            showCustomFoodDialog()
-        }
+
     }
 
-        private fun fetchFoodData() {
-            // Start with local custom foods
-            val combinedList = localFoodManager.getCustomFoods().toMutableList()
-            database.addListenerForSingleValueEvent(object : ValueEventListener {
+    private fun fetchFoodData() {
+        val localFoods = localFoodManager.getCustomFoods().toMutableList()
+
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val tempList = mutableListOf<FoodItem>()
+                val firebaseFoods = mutableListOf<FoodItem>()
 
                 if (snapshot.exists()) {
                     snapshot.children.forEach { data ->
                         val foodItemMap = data.value as? Map<String, Any?>
                         foodItemMap?.let { map ->
                             FoodItem.fromSnapshot(map)?.let { foodItem ->
-                                tempList.add(foodItem)
+                                firebaseFoods.add(foodItem)
                             }
-                            combinedList.add(FoodItem.fromSnapshot(map))
                         }
                     }
-                    foodList.clear()
-                    foodList.addAll(tempList)
-                    adapter.updateOriginalList(tempList)
-                    updateFoodList(combinedList)
-                } else {
-                    showToast("No food data available")
                 }
+
+                // Combine Firebase + Local foods
+                val combinedList = localFoods + firebaseFoods
+
+                foodList.clear()
+                foodList.addAll(combinedList)
+                adapter.updateOriginalList(combinedList)
             }
 
             override fun onCancelled(error: DatabaseError) {
                 showToast("Failed to load food data: ${error.message}")
-                updateFoodList(combinedList) // Still show local foods
+
+                // Show just local if Firebase fails
+                foodList.clear()
+                foodList.addAll(localFoods)
+                adapter.updateOriginalList(localFoods)
             }
         })
 
@@ -163,23 +168,22 @@ class FoodPage : AppCompatActivity() {
             isCustom = true
         )
 
-        // Remember currently selected items
-        val previouslySelected = adapter.getSelectedItems()
-
-        // Add to beginning of list
-        foodList.add(0, customFood)
-
-        // Save to local storage (new foods always added to start)
+        // Save to local storage
         val currentCustomFoods = localFoodManager.getCustomFoods().toMutableList()
-        currentCustomFoods.add(0, customFood)
+        currentCustomFoods.add(0, customFood) // You can also append at the end if preferred
         localFoodManager.saveCustomFoods(currentCustomFoods)
 
-        // Optimized UI updates
-        adapter.notifyItemInserted(0)
-        recyclerView.scrollToPosition(0)
+        // Add to the list and update adapter's data
+        val newList = listOf(customFood) + adapter.getSelectedItems() + foodList
+            .filterNot { it == customFood } // Prevent duplicates
 
-        // Restore previous selections and select new item
+        foodList.clear()
+        foodList.addAll(newList)
+        adapter.updateOriginalList(newList)
+
+        // Select the newly added item (it’s now index 0)
         adapter.selectItem(0, keepExisting = true)
+        recyclerView.scrollToPosition(0)
 
         confirmButton.visibility = View.VISIBLE
         Toast.makeText(this, "$foodName added to your foods", Toast.LENGTH_SHORT).show()
