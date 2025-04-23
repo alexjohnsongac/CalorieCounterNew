@@ -3,12 +3,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Search Bar -->
+
+
     <!-- RecyclerView -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_margin="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="16dp"
+        android:iconifiedByDefault="false"
+        android:queryHint="Search food items" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFoodList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp" />
+        android:layout_below="@id/searchView"
+        android:layout_above="@id/confirmButton"
+        android:layout_marginTop="0dp"
+        android:clipToPadding="false"/>
 
     <!-- Confirm Button -->
     <Button
@@ -18,18 +35,6 @@
         android:text="Confirm"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="64dp"
-        android:visibility="gone" /> <!-- Initially hidden -->
-
-    <!-- Custom food button -->
-    <Button
-        android:id="@+id/buttonAddCustom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Add Custom Food" />
+        android:layout_margin="16dp"
+        android:visibility="gone"/>
 </RelativeLayout>

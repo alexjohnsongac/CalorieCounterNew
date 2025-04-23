@@ -55,7 +55,7 @@ public class LibrariesForLibs extends AbstractExternalDependencyFactory {
 
     /**
      * Dependency provider for <b>mpandroidchart</b> with <b>com.github.PhilJay:MPAndroidChart</b> coordinates and
-     * with version reference <b>mpandroidchart</b>
+     * with version <b>v3.1.0</b>
      * <p>
      * This dependency was declared in catalog libs.versions.toml
      */

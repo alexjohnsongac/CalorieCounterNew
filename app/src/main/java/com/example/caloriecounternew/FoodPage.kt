@@ -8,16 +8,13 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 
-class FoodPage : ComponentActivity() {
+class FoodPage : AppCompatActivity() {
 
     private lateinit var database: DatabaseReference
     private lateinit var recyclerView: RecyclerView
@@ -40,6 +37,7 @@ class FoodPage : ComponentActivity() {
         confirmButton = findViewById(R.id.confirmButton)
         customButton = findViewById(R.id.buttonAddCustom)
         foodList = mutableListOf()
+        adapter = FoodAdapter(foodList) { _, _ -> toggleConfirmButtonVisibility() }
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         // Initialize adapter
@@ -50,27 +48,34 @@ class FoodPage : ComponentActivity() {
         }
         recyclerView.adapter = adapter
 
-        // Fetch food data
+        setUpSearchView()
         fetchFoodData()
 
-        // Set up confirm button
-        confirmButton.setOnClickListener {
-            val (itemCount, totalCalories) = adapter.addToDaily()
+        confirmButton.setOnClickListener { handleConfirmButtonClick() }
+    }
 
-            if (itemCount > 0) {
-                Toast.makeText(
-                    this,
-                    "Added $itemCount items ($totalCalories calories)",
-                    Toast.LENGTH_SHORT
-                ).show()
-                navigateToMainActivity()
-            } else {
-                Toast.makeText(
-                    this,
-                    "No items selected",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+    private fun setUpSearchView() {
+        val searchView = findViewById<SearchView>(R.id.searchView).apply {
+            setIconifiedByDefault(false)
+            queryHint = "Search food items"
+            clearFocus()
+
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean = false
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    adapter.filter(newText?.trim() ?: "")
+                    return true
+                }
+            })
+        }
+    }
+
+    private fun toggleConfirmButtonVisibility() {
+        confirmButton.visibility = if (adapter.getSelectedItems().isNotEmpty()) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
         customButton.setOnClickListener {
             showCustomFoodDialog()
@@ -82,24 +87,31 @@ class FoodPage : ComponentActivity() {
             val combinedList = localFoodManager.getCustomFoods().toMutableList()
             database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                val tempList = mutableListOf<FoodItem>()
 
                 if (snapshot.exists()) {
-                    snapshot.children.forEach {
-                        val foodItemMap = it.value as? Map<String, Any?>
+                    snapshot.children.forEach { data ->
+                        val foodItemMap = data.value as? Map<String, Any?>
                         foodItemMap?.let { map ->
+                            FoodItem.fromSnapshot(map)?.let { foodItem ->
+                                tempList.add(foodItem)
+                            }
                             combinedList.add(FoodItem.fromSnapshot(map))
                         }
                     }
+                    foodList.clear()
+                    foodList.addAll(tempList)
+                    adapter.updateOriginalList(tempList)
                     updateFoodList(combinedList)
                 } else {
-                    Toast.makeText(
-                        this@FoodPage,
-                        "No food data available",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showToast("No food data available")
                 }
             }
 
+            override fun onCancelled(error: DatabaseError) {
+                showToast("Failed to load food data: ${error.message}")
+            }
+        })
                 override fun onCancelled(error: DatabaseError) {
                     Toast.makeText(this@FoodPage, "Failed to load food data", Toast.LENGTH_SHORT).show()
                     updateFoodList(combinedList) // Still show local foods
@@ -176,11 +188,26 @@ class FoodPage : ComponentActivity() {
         Toast.makeText(this, "$foodName added to your foods", Toast.LENGTH_SHORT).show()
     }
 
+    private fun handleConfirmButtonClick() {
+        val (itemCount, totalCalories) = adapter.addToDaily()
+
+        if (itemCount > 0) {
+            showToast("Added $itemCount items ($totalCalories calories)")
+            navigateToMainActivity()
+        } else {
+            showToast("No items selected")
+        }
+    }
+
     private fun navigateToMainActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         }
         startActivity(intent)
         finish()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this@FoodPage, message, Toast.LENGTH_SHORT).show()
     }
 }
