@@ -31,6 +31,7 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <!-- Confirm Button -->
+    
     <!-- Custom food button -->
     <Button
         android:id="@+id/buttonAddCustom"
@@ -42,13 +43,4 @@
         android:layout_marginBottom="16dp"
         android:text="Add Custom Food" />
 
-    <Button
-        android:id="@+id/confirmButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Confirm"
-        android:visibility="" />
 </RelativeLayout>
