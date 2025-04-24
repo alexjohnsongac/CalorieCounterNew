@@ -8,6 +8,7 @@ object CalorieStreakManager {
     private const val PREFS_NAME = "CalorieStreakPrefs"
     private const val KEY_STREAK = "streak_count"
     private const val KEY_LAST_UPDATE_DAY = "last_update_day"
+    private const val KEY_DEMO_STREAK = "demo_streak_count"
 
 
     private fun getCalorieGoal(context: Context): Int {
@@ -63,6 +64,58 @@ object CalorieStreakManager {
     }
 
     fun resetWeeklyStreak(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit()
+            .putInt(KEY_STREAK, 0)
+            .putInt(KEY_LAST_UPDATE_DAY, -1)
+            .apply()
+    }
+
+    // reworked above functions for demo streak
+
+    fun checkAndUpdateDemoStreak(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val today = Calendar.getInstance().get(Calendar.DAY_OF_YEAR)
+        val lastUpdateDay = prefs.getInt(KEY_LAST_UPDATE_DAY, -1)
+
+        val calorieGoal = getCalorieGoal(context)
+        val goalType = getGoalType(context)
+
+        val bufferMinus = when (goalType) {
+            "Lose weight" -> 400
+            "Gain mass" -> 100
+            else -> 300
+        }
+
+        val bufferPlus = when (goalType) {
+            "Lose weight" -> 100
+            "Gain mass" -> 400
+            else -> 300
+        }
+
+        val minCal = calorieGoal - bufferMinus
+        val maxCal = calorieGoal + bufferPlus
+
+        val calories = ConsumedDailyList.getDailyCalories()
+        var demo_streak = prefs.getInt(KEY_DEMO_STREAK, 0)
+
+            if (calories in minCal..maxCal) {
+                demo_streak = (demo_streak + 1).coerceAtMost(7) // cap at 7
+            }
+
+        prefs.edit()
+            .putInt(KEY_DEMO_STREAK, demo_streak)
+            .putInt(KEY_LAST_UPDATE_DAY, today)
+            .apply()
+    }
+
+
+    fun getDemoStreak(context: Context): Int {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getInt(KEY_DEMO_STREAK, 0)
+    }
+
+    fun resetWeeklyDemoStreak(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit()
             .putInt(KEY_STREAK, 0)
