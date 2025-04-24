@@ -1,36 +1,45 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Search Bar -->
-
-
-    <!-- RecyclerView -->
-
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchView"
+    <!-- Top bar with Search and Add Custom Food button side by side -->
+    <LinearLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_margin="16dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="16dp"
-        android:iconifiedByDefault="false"
-        android:queryHint="Search food items" />
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
 
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search food items" />
+
+        <Button
+            android:id="@+id/buttonAddCustom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add" />
+    </LinearLayout>
+
+    <!-- Main content area -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFoodList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/searchView"
+        android:layout_below="@id/topBar"
         android:layout_above="@id/confirmButton"
-        android:layout_marginTop="0dp"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:paddingBottom="16dp" />
 
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <!-- Confirm Button -->
+    <!-- Confirm button at bottom -->
     <Button
         android:id="@+id/confirmButton"
         android:layout_width="wrap_content"
@@ -38,19 +47,7 @@
         android:text="Confirm"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="64dp"
-        android:visibility="gone" /> <!-- Initially hidden -->
-
-    <!-- Custom food button -->
-    <Button
-        android:id="@+id/buttonAddCustom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="Add Custom Food" />
+        android:layout_margin="16dp"
+        android:visibility="gone" />
 
 </RelativeLayout>
