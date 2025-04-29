@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/pieChart"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="86dp"
+        android:layout_marginTop="26dp"
         android:text="@string/calorie_streak"
         android:textColor="@android:color/black"
         android:textSize="18sp"
@@ -58,6 +58,7 @@
         android:text="@string/sign_out"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
         android:visibility="gone"
         android:background="@drawable/rounded_button"/>
 
@@ -68,8 +69,8 @@
         android:layout_height="wrap_content"
         android:text="@string/Go_Food"
         android:layout_centerHorizontal="true"
-        android:layout_above="@id/buttonSignOut"
-        android:layout_marginBottom="64dp"
+        android:layout_above="@id/buttonSetCalorieGoal"
+        android:layout_marginBottom="16dp"
         android:visibility="gone"
         android:background="@drawable/rounded_button"/>
 
